@@ -1,0 +1,1 @@
+export const API = 'https://backendpolleria.onrender.com/api';
