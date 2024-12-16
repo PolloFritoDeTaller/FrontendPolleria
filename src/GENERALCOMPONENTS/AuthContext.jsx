@@ -55,6 +55,7 @@ export const AuthProvider = ({ children }) => {
   // Función para cerrar sesión
   const logOut = async () => {
     try {
+      console.log("logout");
       await logoutRequest();
       Cookies.remove("token");
       Cookies.remove("refreshToken");
