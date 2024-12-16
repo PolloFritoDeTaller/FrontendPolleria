@@ -19,11 +19,7 @@ export const AuthProvider = ({ children }) => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
   });
-  // const [isAuthenticated, setIsAuthenticated] = useState(!!Cookies.get("token"));
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    const storedToken = Cookies.get("token");
-    return storedToken ? JSON.parse(storedToken) : null;
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState(!!Cookies.get("token"));
   const [isLoading, setIsLoading] = useState(true);
   const { clearCart } = useCart();
 
@@ -90,13 +86,13 @@ export const AuthProvider = ({ children }) => {
       console.log("Restoken",refreshToken)
       console.log("Restoken1", Cookies.refreshToken);
 
-      // if (!token && !refreshToken) {
-      //   console.log("true y return");
-      //   setUser(null);
-      //   setIsAuthenticated(false);
-      //   setIsLoading(false);
-      //   return;
-      // }
+      if (!token && !refreshToken) {
+        console.log("true y return");
+        setUser(null);
+        setIsAuthenticated(false);
+        setIsLoading(false);
+        return;
+      }
 
       try {
         // Intentamos validar el token existente
