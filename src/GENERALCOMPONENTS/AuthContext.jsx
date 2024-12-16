@@ -19,7 +19,11 @@ export const AuthProvider = ({ children }) => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
   });
-  const [isAuthenticated, setIsAuthenticated] = useState(!!Cookies.get("token"));
+  // const [isAuthenticated, setIsAuthenticated] = useState(!!Cookies.get("token"));
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    const storedToken = Cookies.get("token");
+    return storedToken ? JSON.parse(storedToken) : null;
+  });
   const [isLoading, setIsLoading] = useState(true);
   const { clearCart } = useCart();
 
