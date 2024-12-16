@@ -80,6 +80,9 @@ export const AuthProvider = ({ children }) => {
       const token = Cookies.get("token");
       const refreshToken = Cookies.get("refreshToken");
 
+      console.log("token",token)
+      console.log("Restoken",refreshToken)
+
       if (!token && !refreshToken) {
         console.log("true y return");
         setUser(null);
