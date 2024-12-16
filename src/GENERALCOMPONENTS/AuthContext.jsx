@@ -90,13 +90,13 @@ export const AuthProvider = ({ children }) => {
       console.log("Restoken",refreshToken)
       console.log("Restoken1", Cookies.refreshToken);
 
-      if (!token && !refreshToken) {
-        console.log("true y return");
-        setUser(null);
-        setIsAuthenticated(false);
-        setIsLoading(false);
-        return;
-      }
+      // if (!token && !refreshToken) {
+      //   console.log("true y return");
+      //   setUser(null);
+      //   setIsAuthenticated(false);
+      //   setIsLoading(false);
+      //   return;
+      // }
 
       try {
         // Intentamos validar el token existente
