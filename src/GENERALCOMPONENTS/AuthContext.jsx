@@ -81,7 +81,9 @@ export const AuthProvider = ({ children }) => {
       const refreshToken = Cookies.get("refreshToken");
 
       console.log("token",token)
+      console.log("token1", Cookies.token);
       console.log("Restoken",refreshToken)
+      console.log("Restoken1", Cookies.refreshToken);
 
       if (!token && !refreshToken) {
         console.log("true y return");
