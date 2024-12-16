@@ -29,7 +29,6 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await loginRequest(data, { withCredentials: true });
 
-
       if (res && res.data) {
         const { foundUser } = res.data;
 
@@ -82,17 +81,20 @@ export const AuthProvider = ({ children }) => {
       const refreshToken = Cookies.get("refreshToken");
 
       if (!token && !refreshToken) {
-        console.log("true");
+        console.log("true y return");
         setUser(null);
         setIsAuthenticated(false);
         setIsLoading(false);
         return;
       }
+
       try {
         // Intentamos validar el token existente
+        console.log("validando");
         const res = await validateTokenRequest();
 
         if (res && res.data) {
+          console.log("primer if del try");
           const userData = {
             name: res.data.user.name,
             email: res.data.user.email,
@@ -106,8 +108,10 @@ export const AuthProvider = ({ children }) => {
 
         } else {
           const refreshRes = await refreshTokenRequest(refreshToken);
+          console.log("refresh", refreshRes);
 
           if (refreshRes && refreshRes.data) {
+            console.log("refresh y refresh data")
             const { token: newToken, refreshToken: newRefreshToken } = refreshRes.data;
 
             // Guardamos los nuevos tokens en las cookies
@@ -129,6 +133,7 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem("user", JSON.stringify(userData));
           } else {
             // Si no se pudo refrescar el token, cerramos sesión
+            console.log("no se pudo refrescar")
             setUser(null);
             setIsAuthenticated(false);
             Cookies.remove("token");
@@ -137,6 +142,7 @@ export const AuthProvider = ({ children }) => {
           }
         }
       } catch (error) {
+        console.log("error catch")
         setUser(null);
         setIsAuthenticated(false);
         Cookies.remove("token");
