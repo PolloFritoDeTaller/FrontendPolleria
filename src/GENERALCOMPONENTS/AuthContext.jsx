@@ -23,6 +23,8 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const { clearCart } = useCart();
 
+  console.log("hola");
+
   const signIn = async (data) => {
     try {
       const res = await loginRequest(data, { withCredentials: true });
@@ -80,7 +82,7 @@ export const AuthProvider = ({ children }) => {
       const refreshToken = Cookies.get("refreshToken");
 
       if (!token && !refreshToken) {
-
+        console.log("true");
         setUser(null);
         setIsAuthenticated(false);
         setIsLoading(false);
