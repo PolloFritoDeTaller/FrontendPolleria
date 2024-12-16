@@ -80,6 +80,7 @@ export const AuthProvider = ({ children }) => {
       const token = Cookies.get("token");
       const refreshToken = Cookies.get("refreshToken");
 
+      console.log(Cookies.get());
       console.log("token",token)
       console.log("token1", Cookies.token);
       console.log("Restoken",refreshToken)
