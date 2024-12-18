@@ -8,6 +8,11 @@ import InventoryByDate from './Components/InventoryByDate.jsx';
 const ViewInventory = () => {
   const [selectedOption, setSelectedOption] = useState('allInventories');
   const [error, setError] = useState('');
+  const [refreshKey, setRefreshKey] = useState(0); // Estado para forzar recarga del componente
+
+  const refreshComponent = () => {
+    setRefreshKey((prevKey) => prevKey + 1); // Incrementa para forzar recarga
+  };
 
   return (
     <div className="p-4">
@@ -17,15 +22,15 @@ const ViewInventory = () => {
         initialOption="allInventories"
       />
       {selectedOption === 'todaysInventory' && (
-        <TodaysInventory setError={setError} />
+        <TodaysInventory key={refreshKey} setError={setError} />
       )}
       {selectedOption === 'allInventories' && (
-        <AllInventories setError={setError} />
+        <AllInventories key={refreshKey} setError={setError} />
       )}
       {selectedOption === 'date' && (
-        <InventoryByDate setError={setError} />
+        <InventoryByDate key={refreshKey} setError={setError} />
       )}
-      {error && <ErrorModal error={error} />}
+      {error && <ErrorModal error={error} setError={setError} refreshComponent={refreshComponent} />}
     </div>
   );
 };

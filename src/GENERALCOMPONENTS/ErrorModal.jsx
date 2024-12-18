@@ -1,7 +1,7 @@
+// src/GENERALCOMPONENTS/ErrorModal.jsx
 import { useEffect, useState } from "react";
 
-const ErrorModal = ({ error, setError }) => {
-
+const ErrorModal = ({ error, setError, refreshComponent }) => {
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
@@ -13,15 +13,14 @@ const ErrorModal = ({ error, setError }) => {
   }, [error]);
 
   const handleAcceptClick = async () => {
-    // Verifica si el error tiene un token
-    if (error?.response?.data?.token) {
-      try {
-        setError(null);
-      } catch (error) {
-        setError(null);
-      }
-    } else {
+    // Verifica si setError es una función antes de llamarla
+    if (setError && typeof setError === "function") {
       setError(null);
+    }
+
+    // Llamar a la función para "refrescar" el componente
+    if (refreshComponent && typeof refreshComponent === "function") {
+      refreshComponent();
     }
   };
 
