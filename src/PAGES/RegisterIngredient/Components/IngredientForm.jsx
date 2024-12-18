@@ -114,7 +114,7 @@ const IngredientForm = () => {
                 type="text"
                 value={form.name}
                 onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))}
-                maxLength={30}
+                maxLength={40}
                 className="w-full p-2 border rounded-md focus:ring-red-500 focus:border-red-500"
                 placeholder="Ej: Pollo, Papas, Tomate..."
               />
@@ -147,6 +147,7 @@ const IngredientForm = () => {
                 step="0.01"
                 value={form.currentStock}
                 onChange={(e) => setForm(prev => ({ ...prev, currentStock: e.target.value }))}
+                maxLength={5}
                 className="w-full p-2 border rounded-md focus:ring-red-500 focus:border-red-500"
                 placeholder={`Ingrese el stock en ${form.unit}`}
               />
@@ -162,6 +163,7 @@ const IngredientForm = () => {
                 step="0.01"
                 value={form.cost}
                 onChange={(e) => setForm(prev => ({ ...prev, cost: e.target.value }))}
+                maxLength={4}
                 className="w-full p-2 border rounded-md focus:ring-red-500 focus:border-red-500"
                 placeholder={`Ingrese el costo por ${form.unit}`}
               />

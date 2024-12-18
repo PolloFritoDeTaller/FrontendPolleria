@@ -105,6 +105,7 @@ const EmployeePreview = ({ form }) => {
               src={URL.createObjectURL(form.photo)}
               alt="Foto del empleado"
               className="w-32 h-32 object-cover rounded-full border border-gray-300"
+              onLoad={() => URL.revokeObjectURL(URL.createObjectURL(form.photo))}
             />
           </div>
         )}

@@ -4,7 +4,6 @@ import { getInventoryByIdRequest } from '../../api/branch';
 import { useBranch } from '../../CONTEXTS/BranchContext';
 import InventoryActions from './Components/InventoryActions';
 import InventoryInfo from './Components/InventoryInfo';
-import EditInventory from './Components/EditInventory';
 import PrintInventory from './Components/PrintInventory';
 
 const InventoryDetails = () => {
@@ -83,17 +82,6 @@ const InventoryDetails = () => {
       
       {mode === 'view' && (
         <InventoryInfo inventory={inventory} />
-      )}
-      
-      {mode === 'edit' && (
-        <EditInventory 
-          inventory={inventory} 
-          onSave={async (updatedData) => {
-            setInventory(updatedData);
-            setMode('view');
-          }}
-          onCancel={() => setMode('view')}
-        />
       )}
       
       {mode === 'print' && (

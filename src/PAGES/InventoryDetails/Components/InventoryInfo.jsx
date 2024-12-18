@@ -9,11 +9,6 @@ const InventoryInfo = ({ inventory }) => {
         case 'purchase':
           acc.purchases += quantity;
           break;
-        case 'adjustment':
-          if (mov.quantity < 0) {
-            acc.adjustments += Math.abs(mov.quantity);
-          }
-          break;
       }
       return acc;
     }, { sales: 0, purchases: 0, adjustments: 0 });
@@ -66,12 +61,6 @@ const InventoryInfo = ({ inventory }) => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Ventas
                 </th>
-                {/*<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Compras
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Ajustes
-                </th>*/}
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Stock Final
                 </th>
@@ -91,12 +80,6 @@ const InventoryInfo = ({ inventory }) => {
                     <td className="px-6 py-4 whitespace-nowrap text-red-600">
                       {movements.sales > 0 ? `-${movements.sales.toFixed(2)}` : '0.00'} {unit}
                     </td>
-                    {/*<td className="px-6 py-4 whitespace-nowrap text-green-600">
-                      {movements.purchases > 0 ? `+${movements.purchases.toFixed(2)}` : '0.00'} {unit}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-yellow-600">
-                      {movements.adjustments > 0 ? `-${movements.adjustments.toFixed(2)}` : '0.00'} {unit}
-                    </td>*/}
                     <td className="px-6 py-4 whitespace-nowrap">
                       {item.finalStock.toFixed(2)} {unit}
                     </td>

@@ -21,14 +21,6 @@ const InventoryActions = ({ inventory, mode, setMode }) => {
           >
             <FaPrint /> Imprimir
           </button>
-          {/*{inventory.status === 'open' && (
-            <button 
-              onClick={() => setMode('edit')}
-              className="bg-yellow-500 hover:bg-yellow-700 text-white px-4 py-2 rounded flex items-center gap-2"
-            >
-              <FaEdit /> Editar
-            </button>
-          )}*/}
         </div>
       )}
     </div>

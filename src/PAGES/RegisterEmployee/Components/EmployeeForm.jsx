@@ -296,7 +296,16 @@ const EmployeeForm = ({ onFormChange }) => {
             type="file"
             name="photo"
             accept="image/*"
-            onChange={handleChange}
+            onChange={(e) => {
+              const file = e.target.files[0];
+              // 5MB en bytes
+              if (file && file.size > 5 * 1024 * 1024) {
+                setError("La imagen no debe superar los 5MB");
+                e.target.value = null; // Limpiar el input
+                return;
+              }
+              handleChange(e);
+            }}
             className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
           />
         </div>

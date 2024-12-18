@@ -2,8 +2,6 @@
 import axios from './axios.js'
 import { API } from './conf/routeApi.js';
 
-
-
 export const getBranchsRequest = () => axios.get(`${API}/branches`);
 export const deleteBranchRequest = (id) => axios.delete(`${API}/branches/${id}`);
 export const editBranchRequest = (id, data) => axios.put(`${API}/branches/${id}`, data);

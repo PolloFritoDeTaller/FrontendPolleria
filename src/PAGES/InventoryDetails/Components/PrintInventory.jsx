@@ -15,11 +15,6 @@ const PrintInventory = ({ inventory, onClose }) => {
         case 'purchase':
           acc.purchases += quantity;
           break;
-        case 'adjustment':
-          if (mov.quantity < 0) {
-            acc.adjustments += Math.abs(mov.quantity);
-          }
-          break;
       }
       return acc;
     }, { sales: 0, purchases: 0, adjustments: 0 });

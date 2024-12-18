@@ -180,7 +180,7 @@ const SaleForm = () => {
                 name="clientName"
                 value={form.clientName}
                 onChange={handleChange}
-                maxLength={15}
+                maxLength={40}
                  
                 required
                 className="mt-1 block w-full border rounded-md p-2"
@@ -196,6 +196,7 @@ const SaleForm = () => {
                 name="clientCI"
                 value={form.clientCI}
                 onChange={handleChange}
+                maxLength={14}
                 required
                 className="mt-1 block w-full border rounded-md p-2"
               />
