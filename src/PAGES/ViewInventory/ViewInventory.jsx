@@ -30,7 +30,7 @@ const ViewInventory = () => {
       {selectedOption === 'date' && (
         <InventoryByDate key={refreshKey} setError={setError} />
       )}
-      {error && <ErrorModal error={error} setError={setError} refreshComponent={refreshComponent} />}
+      {error && <ErrorModal error={error} key={refreshKey} setError={setError} refreshComponent={refreshComponent} />}
     </div>
   );
 };
