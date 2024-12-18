@@ -8,11 +8,12 @@ import { useBranch } from "../../CONTEXTS/BranchContext";
 const BranchesPage = () => {
   const [showManageBranches, setShowManageBranches] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
-  const [selectedBranches, setSelectedBranches] = useState([]); // Almacena las sucursales seleccionadas
-  const [imageFile, setImageFile] = useState(null); // Almacena la imagen seleccionada
-  const [textContent, setTextContent] = useState(""); // Almacena el texto ingresado
-  const [branches, setBranches] = useState([]); // Almacena las sucursales obtenidas desde la API
+  const [selectedBranches, setSelectedBranches] = useState([]); 
+  const [imageFile, setImageFile] = useState(null); 
+  const [textContent, setTextContent] = useState(""); 
+  const [branches, setBranches] = useState([]); 
   const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false); // Estado para mostrar el modal
 
   // Función para obtener las sucursales desde la API
   useEffect(() => {
@@ -30,21 +31,18 @@ const BranchesPage = () => {
     fetchBranches();
   }, []);
 
-  // Función para gestionar la visibilidad de la sección
   const handleManageBranchesClick = () => {
     setShowManageBranches(!showManageBranches);
-    setSelectedOption(null); // Limpiar la selección si se cierra la sección
-    setSelectedBranches([]); // Limpiar las sucursales seleccionadas
-    setImageFile(null); // Limpiar la imagen seleccionada
-    setTextContent(""); // Limpiar el contenido de texto
+    setSelectedOption(null); 
+    setSelectedBranches([]); 
+    setImageFile(null); 
+    setTextContent(""); 
   };
 
-  // Función para manejar la selección de la imagen
   const handleImageChange = (e) => {
-    setImageFile(e.target.files[0]); // Almacenar la imagen seleccionada
+    setImageFile(e.target.files[0]);
   };
 
-  // Función para manejar la selección de sucursales
   const handleBranchSelection = (branchId) => {
     setSelectedBranches((prev) =>
       prev.includes(branchId)
@@ -53,75 +51,67 @@ const BranchesPage = () => {
     );
   };
 
-  // Función para seleccionar todas las sucursales
   const handleSelectAllBranches = () => {
     setSelectedBranches(branches.map((branch) => branch._id));
   };
 
-  // Función para manejar el texto
   const handleTextChange = (e) => {
     setTextContent(e.target.value);
   };
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     if (
-      (selectedOption === "image" &&
-        imageFile &&
-        selectedBranches.length > 0) ||
-      (selectedOption === "text" &&
-        textContent.trim().length > 0 &&
-        selectedBranches.length > 0)
+      (selectedOption === "image" && imageFile && selectedBranches.length > 0) ||
+      (selectedOption === "text" && textContent.trim().length > 0 && selectedBranches.length > 0)
     ) {
-      try {
-        // Si seleccionó 'image' y hay una imagen
-        if (selectedOption === "image" && imageFile) {
-          await addImageToBranchesRequest(
-            imageFile,
-            selectedBranches.length === branches.length
-              ? ["all"]
-              : selectedBranches
-          );
-        }
-
-        // Si seleccionó 'text' y hay contenido de texto
-        if (selectedOption === "text" && textContent.trim().length > 0) {
-          await addTextToBranchesRequest(
-            textContent,
-            selectedBranches.length === branches.length
-              ? ["all"]
-              : selectedBranches
-          );
-        }
-
-        setShowManageBranches(false);
-        setSelectedOption(null);
-        setSelectedBranches([]);
-        setImageFile(null);
-        setTextContent("");
-
-        alert("Acción confirmada correctamente");
-      } catch (error) {
-        console.error("Error al procesar la acción:", error);
-        alert("Hubo un error al procesar la acción.");
-      }
+      setShowModal(true); // Mostrar el modal de confirmación
     }
   };
 
-  // Función para cancelar la acción
+  const handleModalConfirm = async () => {
+    try {
+      if (selectedOption === "image" && imageFile) {
+        await addImageToBranchesRequest(
+          imageFile,
+          selectedBranches.length === branches.length ? ["all"] : selectedBranches
+        );
+      }
+
+      if (selectedOption === "text" && textContent.trim().length > 0) {
+        await addTextToBranchesRequest(
+          textContent,
+          selectedBranches.length === branches.length ? ["all"] : selectedBranches
+        );
+      }
+
+      setShowManageBranches(false);
+      setSelectedOption(null);
+      setSelectedBranches([]);
+      setImageFile(null);
+      setTextContent("");
+      setShowModal(false); // Cerrar el modal
+    } catch (error) {
+      console.error("Error al procesar la acción:", error);
+      alert("Hubo un error al procesar la acción.");
+    }
+  };
+
+  const handleModalCancel = () => {
+    setShowModal(false); // Cerrar el modal sin realizar acción
+  };
+
   const handleCancel = () => {
     setShowManageBranches(false);
     setSelectedOption(null);
-    setSelectedBranches([]); // Limpiar las sucursales seleccionadas
-    setImageFile(null); // Limpiar la imagen seleccionada
-    setTextContent(""); // Limpiar el contenido de texto
+    setSelectedBranches([]);
+    setImageFile(null);
+    setTextContent("");
   };
 
   return (
     <div className="bg-gray-50 min-h-screen font-sans">
       <div className="container mx-auto p-6">
-        <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">
-          Gestión de Sucursales
-        </h1>
+        <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">Gestión de Sucursales</h1>
 
         <div className="text-center mb-8">
           <button
@@ -132,26 +122,19 @@ const BranchesPage = () => {
           </button>
         </div>
 
-        {/* Sección de gestión de sucursales */}
         {showManageBranches && (
           <div className="bg-white p-6 rounded-lg shadow-xl mb-10">
-            <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
-              ¿Qué deseas hacer?
-            </h2>
+            <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">¿Qué deseas hacer?</h2>
             <div className="flex justify-center gap-8">
               <button
                 onClick={() => setSelectedOption("image")}
-                className={`${
-                  selectedOption === "image" ? "bg-green-500" : "bg-green-400"
-                } text-white py-3 px-8 rounded-full hover:bg-green-600 transition-all`}
+                className={`${selectedOption === "image" ? "bg-green-500" : "bg-green-400"} text-white py-3 px-8 rounded-full hover:bg-green-600 transition-all`}
               >
                 <FaImage className="mr-2" /> Subir Imagen
               </button>
               <button
                 onClick={() => setSelectedOption("text")}
-                className={`${
-                  selectedOption === "text" ? "bg-blue-500" : "bg-blue-400"
-                } text-white py-3 px-8 rounded-full hover:bg-blue-600 transition-all`}
+                className={`${selectedOption === "text" ? "bg-blue-500" : "bg-blue-400"} text-white py-3 px-8 rounded-full hover:bg-blue-600 transition-all`}
               >
                 <FaTextWidth className="mr-2" /> Subir Texto
               </button>
@@ -165,10 +148,7 @@ const BranchesPage = () => {
                   className="block w-full mb-4 p-2"
                   onChange={handleImageChange}
                 />
-                <label className="text-lg">
-                  Selecciona las sucursales a las que deseas publicar esta
-                  imagen
-                </label>
+                <label className="text-lg">Selecciona las sucursales a las que deseas publicar esta imagen</label>
                 <button
                   onClick={handleSelectAllBranches}
                   className="bg-blue-500 text-white py-2 px-6 rounded-full mt-4 hover:bg-blue-600 transition-all"
@@ -207,12 +187,9 @@ const BranchesPage = () => {
                   className="block w-full mb-4 p-2 border border-gray-300 rounded-lg"
                   rows="4"
                   maxLength={200}
-                  pattern="\d{200}"
                   placeholder="Escribe tu texto aquí..."
                 ></textarea>
-                <label className="text-lg">
-                  Selecciona las sucursales a las que deseas publicar este texto
-                </label>
+                <label className="text-lg">Selecciona las sucursales a las que deseas publicar este texto</label>
                 <button
                   onClick={handleSelectAllBranches}
                   className="bg-blue-500 text-white py-2 px-6 rounded-full mt-4 hover:bg-blue-600 transition-all"
@@ -246,17 +223,9 @@ const BranchesPage = () => {
             <div className="mt-8 text-center flex justify-center gap-4">
               <button
                 onClick={handleConfirm}
-                disabled={
-                  !(
-                    selectedBranches.length > 0 &&
-                    (textContent.trim().length > 0 || imageFile)
-                  )
-                }
+                disabled={!(selectedBranches.length > 0 && (textContent.trim().length > 0 || imageFile))}
                 className={`${
-                  !(
-                    selectedBranches.length > 0 &&
-                    (textContent.trim().length > 0 || imageFile)
-                  )
+                  !(selectedBranches.length > 0 && (textContent.trim().length > 0 || imageFile))
                     ? "bg-gray-400"
                     : "bg-yellow-500"
                 } text-white py-3 px-8 rounded-full hover:bg-yellow-600 transition-all`}
@@ -279,6 +248,30 @@ const BranchesPage = () => {
           <RegisterBranch />
         </div>
       </div>
+
+      {/* Modal de confirmación */}
+      {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
+            <h3 className="text-xl font-semibold mb-4">Confirmar acción</h3>
+            <p className="mb-6">¿Estás seguro de que deseas realizar esta acción?</p>
+            <div className="flex justify-end gap-4"> {/* Cambio aquí: justify-end */}
+              <button
+                onClick={handleModalCancel}
+                className="bg-red-500 text-white py-2 px-4 rounded-full hover:bg-red-600"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleModalConfirm}
+                className="bg-green-500 text-white py-2 px-4 rounded-full hover:bg-green-600"
+              >
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
