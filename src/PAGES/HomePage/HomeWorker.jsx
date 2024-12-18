@@ -8,8 +8,6 @@ import {
   getBranchImagesRequest,
   getBranchTextsRequest,
 } from "../../api/branch";
-import { API } from "../../api/conf/routeApi";
-
 
 const HomeWorker = () => {
   const [branchMessages, setBranchMessages] = useState([]);
@@ -81,7 +79,7 @@ const HomeWorker = () => {
 
   return (
     <>
-      <div className="bg-gray-50 font-sans flex flex-col sm:flex-row">
+      <div className="bg-gray-50 font-sans flex flex-col sm:flex-row" style={{ minHeight: "81vh" }}>
         {/* Carrusel de Imágenes de la Sucursal */}
         <section className="my-10 sm:w-1/2 w-full mx-auto">
           <h2 className="text-center text-3xl font-bold mb-6 text-gray-800">
@@ -94,7 +92,7 @@ const HomeWorker = () => {
                 className="relative transform transition-all hover:scale-105"
               >
                 <img
-                  src={`${API}/${image.url}`}
+                  src={`http://localhost:3000/${image.url}`}
                   alt={`Branch image ${index + 1}`}
                   className="w-full h-64 sm:h-96 object-cover rounded-xl shadow-lg"
                 />
