@@ -23,6 +23,7 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const { clearCart } = useCart();
 
+  // Función para iniciar sesión
   const signIn = async (data) => {
     try {
       const res = await loginRequest(data, { withCredentials: true });
@@ -39,8 +40,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("token", token);
         localStorage.setItem("refreshToken", refreshToken);
 
-        // Asegurarse de que el entorno de producción se use HTTPS para secure cookies
-        const isSecure = process.env.NODE_ENV === 'production'; // Solo en producción se establece 'secure: true'
+        const isSecure = process.env.NODE_ENV === 'production';  // Solo en producción se usa 'secure: true'
         Cookies.set("token", token, { expires: 1, secure: isSecure, sameSite: "None" });
         Cookies.set("refreshToken", refreshToken, { expires: 7, secure: isSecure, sameSite: "None" });
 
@@ -58,6 +58,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Función para cerrar sesión
   const logOut = async () => {
     try {
       await logoutRequest();
@@ -74,11 +75,13 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Función para actualizar datos del usuario
   const updateUser = (updatedUserData) => {
     setUser(updatedUserData);
     localStorage.setItem("user", JSON.stringify(updatedUserData));
   };
 
+  // Verificar el token y manejar refresh token
   useEffect(() => {
     const verifyJWT = async () => {
       const token = localStorage.getItem("token") || Cookies.get("token");
@@ -152,7 +155,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     verifyJWT();
-  }, []);
+  }, []); // Este efecto solo se ejecutará una vez al inicio
 
   return (
     <AuthContext.Provider value={{
@@ -163,7 +166,7 @@ export const AuthProvider = ({ children }) => {
       isAuthenticated,
       isLoading,
     }}>
-      {!isLoading ? children : <div>Loading...</div>}
+      {!isLoading ? children : <div>Cargando...</div>}
     </AuthContext.Provider>
   );
 };
