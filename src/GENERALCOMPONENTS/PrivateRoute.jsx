@@ -1,22 +1,17 @@
-import { Navigate, Outlet } from "react-router-dom"; // Importamos Navigate y Outlet
-import { useAuth } from "../GENERALCOMPONENTS/AuthContext";  // Importamos el hook para acceder al contexto de autenticación
+import { Navigate } from "react-router-dom";
+import { useAuth } from "./AuthContext";
 
-// Componente de Ruta Privada
-const PrivateRoute = () => {
-  const { isAuthenticated, isLoading } = useAuth();
+const PrivateRoute = ({ children, allowedRoles }) => {
+  const { isAuthenticated, isLoading, user } = useAuth(); // Accede a `user` del contexto de autenticación
 
-  // Si está cargando o el usuario no está autenticado, redirigimos al login
-  if (isLoading) {
-    return <div>Cargando...</div>; // Puedes poner un spinner o algún mensaje mientras se verifica la autenticación
+  if (isLoading) return <div>Cargando...</div>;
+
+  // Verifica si el usuario está autenticado y si su rol está dentro de los permitidos
+  if (!isAuthenticated || !allowedRoles.includes(user?.role)) {
+    return <Navigate to="/login" />; // O redirigir a otra página si no tiene acceso
   }
 
-  if (!isAuthenticated) {
-    // Si no está autenticado, redirigimos al login
-    return <Navigate to="/login" replace />;
-  }
-
-  // Si está autenticado, mostramos el contenido de la ruta
-  return <Outlet />;
+  return children;
 };
 
 export default PrivateRoute;
