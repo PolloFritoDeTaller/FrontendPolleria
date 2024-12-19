@@ -1,6 +1,6 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import { loginRequest, logoutRequest, validateTokenRequest, refreshTokenRequest } from "../api/authentication";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 import { useCart } from "../CONTEXTS/cartContext";
 
 // Creamos el contexto de autenticación
@@ -39,8 +39,9 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("token", token);
         localStorage.setItem("refreshToken", refreshToken);
 
-        Cookies.set("token", token, { expires: 7 });  // Token expirando en 7 días
-        Cookies.set("refreshToken", refreshToken, { expires: 30 }); // refreshToken expirando en 30 días
+        // Establecemos cookies con configuraciones adecuadas
+        Cookies.set("token", token, { expires: 1, secure: true, sameSite: "None" }); // 1 día de expiración
+        Cookies.set("refreshToken", refreshToken, { expires: 7, secure: true, sameSite: "None" }); // 7 días de expiración
 
         setUser({
           name: foundUser.name,
@@ -105,9 +106,9 @@ export const AuthProvider = ({ children }) => {
           if (refreshRes && refreshRes.data) {
             const { token: newToken, refreshToken: newRefreshToken } = refreshRes.data;
 
-            // Guardamos los nuevos tokens en localStorage y cookies con tiempos de expiración extendidos
-            Cookies.set("token", newToken, { expires: 7 });
-            Cookies.set("refreshToken", newRefreshToken, { expires: 30 });
+            // Guardamos los nuevos tokens en localStorage y cookies
+            Cookies.set("token", newToken, { expires: 1, secure: true, sameSite: "None" });
+            Cookies.set("refreshToken", newRefreshToken, { expires: 7, secure: true, sameSite: "None" });
             localStorage.setItem("token", newToken);
             localStorage.setItem("refreshToken", newRefreshToken);
 
