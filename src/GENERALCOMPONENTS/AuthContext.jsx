@@ -1,118 +1,177 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useState, useContext, useEffect } from "react";
+import { loginRequest, logoutRequest, validateTokenRequest, refreshTokenRequest } from "../api/authentication";
 import Cookies from 'js-cookie';
-import { loginRequest, refreshTokenRequest, logoutRequest } from '../api/authentication'; // Asume que estos son tus métodos de API
+import { useCart } from "../CONTEXTS/cartContext";
 
-const AuthContext = createContext();
+// Creamos el contexto de autenticación
+export const AuthContext = createContext();
 
-export const useAuth = () => useContext(AuthContext);
+// Hook para acceder al contexto de autenticación
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) throw new Error("useAuth must be used within an AuthProvider");
+  return context;
+};
 
+// Componente que provee el contexto de autenticación
 export const AuthProvider = ({ children }) => {
-  const [authState, setAuthState] = useState({
-    token: Cookies.get('token') || null,
-    refreshToken: Cookies.get('refreshToken') || null,
-    isAuthenticated: false,
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
   });
+  const [isAuthenticated, setIsAuthenticated] = useState(!!Cookies.get("token"));
+  const [isLoading, setIsLoading] = useState(true);
+  const { clearCart } = useCart();
 
-  // Verificar si el usuario ya está autenticado al cargar la página
+  console.log("hola");
+
+  const signIn = async (data) => {
+    try {
+      const res = await loginRequest(data, { withCredentials: true });
+
+      if (res && res.data) {
+        const { foundUser } = res.data;
+
+
+        localStorage.setItem("user", JSON.stringify({
+          name: foundUser.name,
+          email: foundUser.email,
+          role: foundUser.role,
+        }));
+
+        setUser({
+          name: foundUser.name,
+          email: foundUser.email,
+          role: foundUser.role,
+        });
+        setIsAuthenticated(true);
+      }
+      return res;
+    } catch (e) {
+      console.error("Error al iniciar sesión:", e);
+      return { isError: true, error: e };
+    }
+  };
+
+  // Función para cerrar sesión
+  const logOut = async () => {
+    try {
+      console.log("logout");
+      await logoutRequest();
+      Cookies.remove("token");
+      Cookies.remove("refreshToken");
+      localStorage.removeItem("user");
+      setUser(null);
+      setIsAuthenticated(false);
+      clearCart();
+    } catch (e) {
+      console.log("Error al cerrar sesión:", e);
+    }
+  };
+
+  // Función para actualizar los datos del usuario
+  const updateUser = (updatedUserData) => {
+    setUser(updatedUserData);
+    localStorage.setItem("user", JSON.stringify(updatedUserData)); // Guardamos en localStorage
+  };
+
   useEffect(() => {
-    const token = Cookies.get('token');
-    const refreshToken = Cookies.get('refreshToken');
-    if (token) {
-      setAuthState({
-        token,
-        refreshToken,
-        isAuthenticated: true,
-      });
-    } else {
-      setAuthState({
-        token: null,
-        refreshToken: null,
-        isAuthenticated: false,
-      });
-    }
-  }, []);  // Se ejecuta solo una vez cuando se monta el componente
+    const verifyJWT = async () => {
+      const token = Cookies.get("token");
+      const refreshToken = Cookies.get("refreshToken");
 
-  // Función para manejar login
-  const login = async (credentials) => {
-    try {
-      const response = await loginRequest(credentials);
-      const { token, refreshToken } = response.data;
+      console.log(Cookies.get());
+      console.log("token",token)
+      console.log("token1", Cookies.token);
+      console.log("Restoken",refreshToken)
+      console.log("Restoken1", Cookies.refreshToken);
 
-      // Guardar los tokens en las cookies de forma segura
-      Cookies.set('token', token, { expires: 7, secure: true, sameSite: 'Strict', path: '/' });
-      Cookies.set('refreshToken', refreshToken, { expires: 7, secure: true, sameSite: 'Strict', path: '/' });
+      if (!token && !refreshToken) {
+        console.log("true y return");
+        setUser(null);
+        setIsAuthenticated(false);
+        setIsLoading(false);
+        return;
+      }
 
-      setAuthState({
-        token,
-        refreshToken,
-        isAuthenticated: true,
-      });
-    } catch (error) {
-      console.error('Login Error:', error);
-      setAuthState({
-        token: null,
-        refreshToken: null,
-        isAuthenticated: false,
-      });
-    }
-  };
+      try {
+        // Intentamos validar el token existente
+        console.log("validando");
+        const res = await validateTokenRequest();
 
-  // Función para manejar logout
-  const logout = () => {
-    // Eliminar los tokens de las cookies
-    Cookies.remove('token', { path: '/' });
-    Cookies.remove('refreshToken', { path: '/' });
-    
-    setAuthState({
-      token: null,
-      refreshToken: null,
-      isAuthenticated: false,
-    });
+        if (res && res.data) {
+          console.log("primer if del try");
+          const userData = {
+            name: res.data.user.name,
+            email: res.data.user.email,
+            role: res.data.user.role,
+          };
 
-    logoutRequest(); // Llamar a tu API de logout si es necesario
-  };
+          setUser(userData);
+          setIsAuthenticated(true);
 
-  // Función para refrescar el token
-  const refreshToken = async () => {
-    const refreshToken = Cookies.get('refreshToken');
-    if (!refreshToken) {
-      console.log("No refresh token found");
-      return;
-    }
+          localStorage.setItem("user", JSON.stringify(userData));
 
-    try {
-      const response = await refreshTokenRequest(refreshToken);
-      const { token, refreshToken: newRefreshToken } = response.data;
+        } else {
+          const refreshRes = await refreshTokenRequest(refreshToken);
+          console.log("refresh", refreshRes);
 
-      // Guardar los nuevos tokens en las cookies con las propiedades de seguridad
-      Cookies.set('token', token, { expires: 7, secure: true, sameSite: 'Strict', path: '/' });
-      Cookies.set('refreshToken', newRefreshToken, { expires: 7, secure: true, sameSite: 'Strict', path: '/' });
+          if (refreshRes && refreshRes.data) {
+            console.log("refresh y refresh data")
+            const { token: newToken, refreshToken: newRefreshToken } = refreshRes.data;
 
-      setAuthState({
-        token,
-        refreshToken: newRefreshToken,
-        isAuthenticated: true,
-      });
-    } catch (error) {
-      console.error('Error al refrescar el token:', error);
-      setAuthState({
-        token: null,
-        refreshToken: null,
-        isAuthenticated: false,
-      });
-    }
-  };
+            // Guardamos los nuevos tokens en las cookies
+            Cookies.set("token", newToken, { expires: 1 });
+            Cookies.set("refreshToken", newRefreshToken, { expires: 7 });
+
+            // Actualizamos los datos del usuario
+            const userData = {
+              name: refreshRes.data.name,
+              email: refreshRes.data.email,
+              role: refreshRes.data.role,
+              phone: refreshRes.data.phone,
+              university: refreshRes.data.university,
+              position: refreshRes.data.position,
+            };
+
+            setUser(userData);
+            setIsAuthenticated(true);
+            localStorage.setItem("user", JSON.stringify(userData));
+          } else {
+            // Si no se pudo refrescar el token, cerramos sesión
+            console.log("no se pudo refrescar")
+            setUser(null);
+            setIsAuthenticated(false);
+            Cookies.remove("token");
+            Cookies.remove("refreshToken");
+            localStorage.removeItem("user");
+          }
+        }
+      } catch (error) {
+        console.log("error catch")
+        setUser(null);
+        setIsAuthenticated(false);
+        Cookies.remove("token");
+        Cookies.remove("refreshToken");
+        localStorage.removeItem("user");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    verifyJWT();
+  }, []);
 
   return (
-    <AuthContext.Provider
-      value={{
-        authState,
-        login,
-        logout,
-        refreshToken,
-      }}
-    >
-      {children}
+    <AuthContext.Provider value={{
+      signIn,
+      logOut,
+      updateUser,
+      user,
+      isAuthenticated,
+      isLoading,
+    }}>
+      {!isLoading ? children : <div>Loading...</div>} {/* Solo muestra los hijos si la carga se completó */}
     </AuthContext.Provider>
   );
 };
