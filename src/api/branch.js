@@ -76,7 +76,7 @@ export const deleteBranchImage = (branchId, imageId) => {
 export const addProductToBranchRequest = (data) => axios.post(`${API}/branch/products/addProduct`, data);
 
 export const getProductsByBranchRequest = (nameBranch) => 
-  axios.post(`${API}/branch/products/getProducts`, { 
+  axios.post(`${API}/branch/getProducts`, { 
     nameBranch: nameBranch?.toLowerCase() // Asegura que el nombre esté en minúsculas
   });
   
