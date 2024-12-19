@@ -99,7 +99,7 @@ export const getSalesByDateRequest = (nameBranch, date) =>
 export const getWeeklyProfitsByBranchRequest = (nameBranch) => 
   axios.get(`${API}/branch/sales/weeklyProfits/${nameBranch}`);
 
-export const addEmployeeToBranchRequest = (data) => axios.post(`${API}/register`, data);
+export const addEmployeeToBranchRequest = (data) => axios.post(`${API}/branch/employees/addEmployee`, data);
 
 export const getEmployeesByBranchRequest = (branchName) => {
   // Codificar el nombre de la sucursal para manejar espacios y caracteres especiales
