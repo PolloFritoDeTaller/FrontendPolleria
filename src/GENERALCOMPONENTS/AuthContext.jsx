@@ -91,8 +91,11 @@ export const AuthProvider = ({ children }) => {
       }
 
       try {
+        // Verifica si el access token es válido
         const res = await validateTokenRequest();
+
         if (res && res.data) {
+          // Si el token es válido, actualizamos el estado de usuario
           const userData = {
             name: res.data.user.name,
             email: res.data.user.email,
@@ -102,7 +105,9 @@ export const AuthProvider = ({ children }) => {
           setIsAuthenticated(true);
           localStorage.setItem("user", JSON.stringify(userData));
         } else {
+          // Si el token ha expirado, se refresca el token
           const refreshRes = await refreshTokenRequest(refreshToken);
+          
           if (refreshRes && refreshRes.data) {
             const { token: newToken, refreshToken: newRefreshToken } = refreshRes.data;
 
@@ -122,6 +127,7 @@ export const AuthProvider = ({ children }) => {
             setIsAuthenticated(true);
             localStorage.setItem("user", JSON.stringify(userData));
           } else {
+            // Si no se puede refrescar el token, cerramos la sesión
             setUser(null);
             setIsAuthenticated(false);
             Cookies.remove("token");
