@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useBranch } from '../../../CONTEXTS/BranchContext';
-import { getEmployeesWithFiltersRequest, editEmployeeRequest, deleteEmployeeRequest } from '../../../api/branch';
+import { useBranch } from '../../../../CONTEXTS/BranchContext';
+import { getEmployeesWithFiltersRequest, editEmployeeRequest, deleteEmployeeRequest } from '../../../../api/branch';
 import QuestionMessage from "../../../../GENERALCOMPONENTS/QuestionMessage";
 import AcceptMessage from "../../../../GENERALCOMPONENTS/AcceptMessage";
 import CloudinaryUploadWidget from "../../../../GENERALCOMPONENTS/CloudinaryUploadWidget";
