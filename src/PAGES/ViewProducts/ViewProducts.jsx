@@ -290,3 +290,5 @@ const ViewProducts = () => {
     </div>
   );
 };
+
+export default ViewProducts;
