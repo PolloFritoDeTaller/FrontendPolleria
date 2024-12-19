@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useBranch } from '../../../../CONTEXTS/BranchContext';
-import { getEmployeesWithFiltersRequest, editEmployeeRequest, deleteEmployeeRequest } from '../../../../api/branch';
+import { useBranch } from '../../../CONTEXTS/BranchContext';
+import { getEmployeesWithFiltersRequest, editEmployeeRequest, deleteEmployeeRequest } from '../../../api/branch';
 import QuestionMessage from "../../../../GENERALCOMPONENTS/QuestionMessage";
 import AcceptMessage from "../../../../GENERALCOMPONENTS/AcceptMessage";
-import { API } from '../../../../api/conf/routeApi';
+import CloudinaryUploadWidget from "../../../../GENERALCOMPONENTS/CloudinaryUploadWidget";
 
 const ViewEmployeesForm = ({ activeFilters }) => {
   const [employees, setEmployees] = useState([]);
@@ -53,6 +53,21 @@ const ViewEmployeesForm = ({ activeFilters }) => {
     setIsEditing(true);
   };
 
+  const handleImageUpload = (error, result) => {
+    if (error) {
+      setErrorMessage("Error al subir la imagen");
+      setShowErrorMessage(true);
+      return;
+    }
+    
+    if (result.event === "success") {
+      setEditEmployee({ 
+        ...editEmployee, 
+        photo: result.info.secure_url 
+      });
+    }
+  };
+
   const validateEditForm = () => {
     if (!editEmployee.name?.trim()) {
       setErrorMessage("El nombre es requerido");
@@ -91,6 +106,7 @@ const ViewEmployeesForm = ({ activeFilters }) => {
         salary: Number(editEmployee.salary),
         email: editEmployee.email,
         role: editEmployee.role,
+        photo: editEmployee.photo // Ahora enviamos la URL de Cloudinary
       });
       
       setEmployees(employees.map(emp => 
@@ -213,17 +229,14 @@ const ViewEmployeesForm = ({ activeFilters }) => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredEmployees.map((employee) => (
-          <div
-            key={employee._id}
-            className="flex flex-col border rounded-lg shadow hover:shadow-lg transition-shadow duration-300"
-          >
+          <div key={employee._id} className="flex flex-col border rounded-lg shadow hover:shadow-lg transition-shadow duration-300">
             <div className="p-4 flex flex-col items-center">
               <div className="w-24 h-24 mb-4">
                 {employee.photo ? (
                   <img
-                    src={`${API}/uploads/${employee.photo}`}
+                    src={employee.photo} // Usamos directamente la URL de Cloudinary
                     alt={employee.name}
                     className="w-full h-full object-cover rounded-full border-2 border-gray-300"
                   />

@@ -18,17 +18,17 @@ export const BranchProvider = ({ children }) => {
   const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
   const [branches, setBranches] = useState<Branch[]>([]);
 
-  // Recuperar sucursal de `localStorage` al cargar
   useEffect(() => {
     const storedBranch = localStorage.getItem('selectedBranch');
     if (storedBranch) {
+      console.log('Stored Branch:', JSON.parse(storedBranch));
       setSelectedBranch(JSON.parse(storedBranch));
     }
   }, []);
 
-  // Guardar sucursal en `localStorage` al seleccionar
   useEffect(() => {
     if (selectedBranch) {
+      console.log('Saving Branch:', selectedBranch);
       localStorage.setItem('selectedBranch', JSON.stringify(selectedBranch));
     }
   }, [selectedBranch]);

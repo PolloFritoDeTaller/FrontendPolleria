@@ -3,10 +3,11 @@ import { addProductToBranchRequest } from "../../../api/branch.js";
 import { useBranch } from "../../../CONTEXTS/BranchContext.tsx";
 import QuestionMessage from "../../../GENERALCOMPONENTS/QuestionMessage.jsx";
 import AcceptMessage from "../../../GENERALCOMPONENTS/AcceptMessage.tsx";
+import CloudinaryUploadWidget from "../../../GENERALCOMPONENTS/CloudinaryUploadWidget.jsx";
 
 const ProductForm = () => {
   const { selectedBranch } = useBranch();
-  // Estados para manejo de mensajes
+  const [imageUrl, setImageUrl] = useState("");
   const [showQuestion, setShowQuestion] = useState(false);
   const [showAccept, setShowAccept] = useState(false);
   const [message, setMessage] = useState("");
@@ -31,6 +32,18 @@ const ProductForm = () => {
     }));
   };
 
+  const handleOnUpload = (error, result) => {
+    if (error) {
+      setMessage(error.message);
+      setShowAccept(true);
+      return;
+    }
+    
+    if (result.event === "success") {
+      setImageUrl(result.info.secure_url);
+    }
+  };
+
   const handleConfirmProduct = (event) => {
     event.preventDefault();
     // Muestra el mensaje de confirmación antes de enviar
@@ -39,28 +52,27 @@ const ProductForm = () => {
   };
 
   const handleSubmit = async (event) => {
-    setShowQuestion(false); // Cierra el mensaje de confirmación
+    setShowQuestion(false);
     event.preventDefault();
     try {
-      const formData = new FormData();
-      formData.append("nameProduct", form.nameProduct);
-      formData.append("price", form.price);
-      formData.append("id", form.id);
-      formData.append("description", form.description);
-      formData.append("nameBranch", selectedBranch)
+      const productData = {
+        nameProduct: form.nameProduct,
+        price: form.price,
+        id: form.id,
+        description: form.description,
+        nameBranch: selectedBranch,
+        image: imageUrl
+      };
 
-      if (form.image) formData.append("image", form.image);
-
-      const res = await addProductToBranchRequest(formData);
+      const res = await addProductToBranchRequest(productData);
       console.log(res);
 
-      setForm({ nameProduct: "", price: "", image: null, id: "", description: "" });
-      // Muestra mensaje de éxito
+      setForm({ nameProduct: "", price: "", id: "", description: "" });
+      setImageUrl("");
       setMessage(`Producto agregado exitosamente en la sucursal ${selectedBranch}. Vaya a la vista de productos para verlo.`);
       setShowAccept(true);
     } catch (error) {
       console.log(error.response.data.message);
-      // Muestra mensaje de error
       setMessage(`Error al agregar producto (Error:${error.response.data.message})`);
       setShowAccept(true);
     }
@@ -126,13 +138,7 @@ const ProductForm = () => {
 
         <div>
           <label className="block text-gray-700 font-medium">Subir imagen <span className="text-red-500">*</span></label>
-          <input
-            type="file"
-            name="image"
-            onChange={handleChange}
-            required
-            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-red-600 file:text-white hover:file:bg-red-700 cursor-pointer mt-1"
-          />
+          <CloudinaryUploadWidget onUpload={handleOnUpload} />
         </div>
 
         <button

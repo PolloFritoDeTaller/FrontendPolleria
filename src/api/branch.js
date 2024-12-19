@@ -75,8 +75,17 @@ export const deleteBranchImage = (branchId, imageId) => {
 
 export const addProductToBranchRequest = (data) => axios.post(`${API}/branch/products/addProduct`, data);
 
-export const getProductsByBranchRequest = (nameBranch) => axios.post(`${API}/branch/products/getProducts`, { "nameBranch": nameBranch });
-
+export const getProductsByBranchRequest = (nameBranch) => {
+  if (!nameBranch) {
+      return Promise.reject(new Error('Branch name is required'));
+  }
+  
+  // Enviar el nombre exactamente como está
+  return axios.post(`${API}/branch/products/getProducts`, {
+      nameBranch: nameBranch
+  });
+};
+  
 export const editProductRequest = (id, data) => axios.put(`${API}/branch/products/editProduct/${id}`, data);
 
 // Solicitud para eliminar un producto
