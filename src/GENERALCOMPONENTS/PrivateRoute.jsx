@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 
 
@@ -10,7 +10,7 @@ const PrivateRoute = ({ children, allowedRoles }) => {
     // Verifica si el usuario está autenticado y si su rol está dentro de los permitidos
     return allowedRoles.includes(user?.role)
       ? children
-      : <Navigate to="/index" />;
+      : <Outlet />;
   };
 
 export default PrivateRoute;
