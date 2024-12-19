@@ -130,7 +130,7 @@ const ViewProducts = () => {
           >
             {product.image && (
               <img
-                src={`${API}/uploads/${product.image}`}
+                src={product.image}
                 alt={product.nameProduct}
                 className="w-full h-48 object-cover rounded-t-lg"
               />
