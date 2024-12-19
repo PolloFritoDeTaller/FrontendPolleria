@@ -9,6 +9,7 @@ import QuestionMessage from "../../GENERALCOMPONENTS/QuestionMessage";
 import AcceptMessage from "../../GENERALCOMPONENTS/AcceptMessage";
 import { useAuth } from '../../GENERALCOMPONENTS/AuthContext';
 import { API } from '../../api/conf/routeApi';
+import CloudinaryUploadWidget from "../../GENERALCOMPONENTS/CloudinaryUploadWidget";
 
 const ViewProducts = () => {
   const [products, setProducts] = useState([]);
@@ -55,36 +56,27 @@ const ViewProducts = () => {
 
   const handleEditSave = async () => {
     try {
-      // Crear un FormData para enviar la información, incluyendo la imagen si existe
-      const formData = new FormData();
-      formData.append("id", editProduct.id);
-      formData.append("nameProduct", editProduct.nameProduct);
-      formData.append("price", editProduct.price);
-      formData.append("description", editProduct.description);
-
-      // Solo agregar la imagen si es un nuevo archivo
-      if (editProduct.image instanceof File) {
-        formData.append("image", editProduct.image);
-      }
-
-      // Enviar los datos al servidor
-      const response = await editProductRequest(editProduct._id, formData);
-
-      // Actualizar el estado de productos para reflejar los cambios en la interfaz
+      const productData = {
+        id: editProduct.id,
+        nameProduct: editProduct.nameProduct,
+        price: editProduct.price,
+        description: editProduct.description,
+        image: editProduct.image // Ahora es la URL de Cloudinary
+      };
+  
+      const response = await editProductRequest(editProduct._id, productData);
+  
       setProducts((prevProducts) =>
         prevProducts.map((product) =>
           product._id === editProduct._id ? response.data.product : product
         )
       );
-
-      // Resetear el estado de edición
+  
       setIsEditing(false);
       setEditProduct(null);
     } catch (error) {
       console.error("Error al guardar la edición del producto:", error);
       setErrorMessage("Error al guardar los cambios del producto. Intente de nuevo más tarde.");
-
-      setErrorMessage("Error al guardar los cambios. Intenta nuevamente.");
     }
   };
 
@@ -104,6 +96,21 @@ const ViewProducts = () => {
           console.error("Error al eliminar el producto:", error);
           setErrorMessage("Error eliminando el producto. Intente de nuevo más tarde.");
         });
+    }
+  };
+
+  const handleImageUpload = (error, result) => {
+    if (error) {
+      console.error("Error al subir la imagen:", error);
+      setErrorMessage("Error al subir la imagen. Por favor, intente de nuevo.");
+      return;
+    }
+    
+    if (result.event === "success") {
+      setEditProduct({ 
+        ...editProduct, 
+        image: result.info.secure_url 
+      });
     }
   };
 
@@ -130,7 +137,7 @@ const ViewProducts = () => {
           >
             {product.image && (
               <img
-                src={`${API}/uploads/${product.image}`}
+                src={product.image}
                 alt={product.nameProduct}
                 className="w-full h-48 object-cover rounded-t-lg"
               />
@@ -238,14 +245,7 @@ const ViewProducts = () => {
 
             {/* Campo para editar la imagen */}
             <label className="block mb-2">Imagen:</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) =>
-                setEditProduct({ ...editProduct, image: e.target.files[0] })
-              }
-              className="w-full p-2 mb-4 border border-gray-300 rounded"
-            />
+            <CloudinaryUploadWidget onUpload={handleImageUpload} />
 
             {/* Campo para editar el ID */}
             <label className="block mb-2">ID:</label>
