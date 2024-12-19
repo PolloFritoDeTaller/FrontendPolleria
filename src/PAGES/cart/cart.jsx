@@ -110,7 +110,7 @@ const Cart = () => {
                   <li key={item._id} className="flex items-center justify-between mb-4 p-4 border-b border-gray-200">
                     <div className="flex items-center">
                       <img
-                        src={`${API}/uploads/${item.image}`}
+                        src={item.image}
                         alt={item.nameProduct}
                         className="w-16 h-16 object-cover rounded mr-4"
                       />
