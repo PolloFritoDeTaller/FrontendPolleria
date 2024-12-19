@@ -57,7 +57,10 @@ const Header = () => {
   const handleLogoutClick = async () => {
     try {
       setShowModal(false);
+      // Eliminar el token del localStorage
+      localStorage.removeItem('authToken');
       await logOut();
+      navigate('/login'); // Redirigir al login después de cerrar sesión
     } catch (error) {
       console.error(error);
     }
