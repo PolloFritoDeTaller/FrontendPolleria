@@ -1,18 +1,16 @@
-import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "../GENERALCOMPONENTS/AuthContext";
-import { Children } from "react";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "./AuthContext";
 
-const PrivateRoute = ({ allowedRoles }) => {
-  const { isAuthenticated, isLoading, user } = useAuth();
 
-  if (isLoading) return <div>Cargando...</div>;
-
-  if (!isAuthenticated || (allowedRoles && !allowedRoles.includes(user?.role))) {
-    return <Navigate to="/login" replace />;
-  }
-
-  // Si el usuario está autenticado y tiene permiso, renderiza las rutas hijas
-  return Children;
-};
+const PrivateRoute = ({ children, allowedRoles }) => {
+    const { isAuthenticated, isLoading, user } = useAuth(); // Accede a `user` del contexto de autenticación
+  
+    if (isLoading) return <div>Cargando...</div>;
+  
+    // Verifica si el usuario está autenticado y si su rol está dentro de los permitidos
+    return isAuthenticated && allowedRoles.includes(user?.role)
+      ? children
+      : <Navigate to="/index" />;
+  };
 
 export default PrivateRoute;
