@@ -82,8 +82,11 @@ const Header = () => {
       {(userRole === 'admin' || userRole === 'client' || userRole === 'worker') && (
         <header className="fixed top-0 left-0 right-0 flex flex-col md:flex-row items-center justify-between p-4 bg-red-600 text-white shadow-lg space-y-2 md:space-y-0 z-50">
           {/* Logo y Menú de navegación */}
-          <div className="flex items-center justify-between w-full md:w-auto">
-            <button onClick={toggleNavBar} className="text-3xl hover:text-yellow-300 transition-colors">
+          <div className="flex items-center justify-between w-full md:w-auto relative">
+            <button
+              onClick={toggleNavBar}
+              className="text-3xl hover:text-yellow-300 transition-colors z-60"
+            >
               <FaBars />
             </button>
             <Link
