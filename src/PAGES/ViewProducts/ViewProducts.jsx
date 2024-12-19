@@ -26,32 +26,37 @@ const ViewProducts = () => {
 
   const fetchProducts = async () => {
     try {
-      if (!selectedBranch) {
-        console.warn('No branch selected');
-        return;
-      }
-  
-      console.log('Fetching products for branch:', selectedBranch);
-      console.log('API URL:', `${API}/branch/products/getProducts`);
-  
-      const response = await getProductsByBranchRequest(selectedBranch);
-      console.log('API Response:', response);
-  
-      if (response && response.data && response.data.products) {
-        setProducts(response.data.products);
-      } else {
-        console.warn('No products data in response:', response);
-        setProducts([]);
-      }
+        if (!selectedBranch) {
+            console.warn('No branch selected');
+            return;
+        }
+
+        console.log('Selected Branch:', selectedBranch); // Para debugging
+
+        // Usar el nombre correcto del objeto Branch
+        const branchName = selectedBranch.nameBranch || selectedBranch;
+        
+        console.log('Fetching products for branch:', branchName);
+        
+        const response = await getProductsByBranchRequest(branchName);
+        console.log('API Response:', response);
+
+        if (response?.data?.products) {
+            setProducts(response.data.products);
+        } else {
+            console.warn('No products data in response:', response);
+            setProducts([]);
+        }
     } catch (error) {
-      console.error("Error details:", {
-        message: error.message,
-        response: error.response,
-        status: error?.response?.status
-      });
-      setErrorMessage("Error al cargar los productos. Por favor, intente nuevamente.");
+        console.error("Error details:", {
+            message: error.message,
+            response: error.response,
+            data: error.response?.data,
+            status: error?.response?.status
+        });
+        setErrorMessage("Error al cargar los productos. Por favor, intente nuevamente.");
     }
-  };
+};
 
   useEffect(() => {
     if (selectedBranch) {

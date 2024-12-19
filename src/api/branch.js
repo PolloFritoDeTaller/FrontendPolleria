@@ -76,13 +76,13 @@ export const deleteBranchImage = (branchId, imageId) => {
 export const addProductToBranchRequest = (data) => axios.post(`${API}/branch/products/addProduct`, data);
 
 export const getProductsByBranchRequest = (nameBranch) => {
-  // Add error handling and proper URL construction
   if (!nameBranch) {
-    return Promise.reject(new Error('Branch name is required'));
+      return Promise.reject(new Error('Branch name is required'));
   }
   
+  // Enviar el nombre exactamente como está
   return axios.post(`${API}/branch/products/getProducts`, {
-    nameBranch: nameBranch?.toLowerCase()
+      nameBranch: nameBranch
   });
 };
   
