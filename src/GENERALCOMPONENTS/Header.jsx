@@ -1,4 +1,3 @@
-// src/GENERALCOMPONENTS/Header.jsx
 import { FaBars, FaUser, FaChevronDown, FaShoppingCart } from 'react-icons/fa';
 import { useContext, useState, useRef, useEffect } from 'react';
 import NavBar from './NavBar';
@@ -194,6 +193,11 @@ const Header = () => {
       )}
 
       {showNavBar && <NavBar closeNavBar={closeNavBar} userRole={userRole} />}
+
+      {/* Contenido debajo del encabezado */}
+      <div className="mt-36 md:mt-0">
+        {/* Aquí va el contenido de la página */}
+      </div>
     </>
   );
 };
