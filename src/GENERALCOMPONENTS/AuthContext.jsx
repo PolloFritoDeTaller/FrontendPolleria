@@ -19,11 +19,10 @@ export const AuthProvider = ({ children }) => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
   });
-  const [isAuthenticated, setIsAuthenticated] = useState(!!Cookies.get("token"));
+  const [isAuthenticated, setIsAuthenticated] = useState(!!Cookies.get("token") || localStorage.getItem("token"));
   const [isLoading, setIsLoading] = useState(true);
   const { clearCart } = useCart();
 
-  // Función para iniciar sesión
   const signIn = async (data) => {
     try {
       const res = await loginRequest(data, { withCredentials: true });
@@ -37,7 +36,6 @@ export const AuthProvider = ({ children }) => {
           email: foundUser.email,
           role: foundUser.role,
         }));
-
         localStorage.setItem("token", token);
         localStorage.setItem("refreshToken", refreshToken);
 
@@ -58,10 +56,8 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Función para cerrar sesión
   const logOut = async () => {
     try {
-      console.log("logout");
       await logoutRequest();
       Cookies.remove("token");
       Cookies.remove("refreshToken");
@@ -76,10 +72,9 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Función para actualizar los datos del usuario
   const updateUser = (updatedUserData) => {
     setUser(updatedUserData);
-    localStorage.setItem("user", JSON.stringify(updatedUserData)); // Guardamos en localStorage
+    localStorage.setItem("user", JSON.stringify(updatedUserData));
   };
 
   useEffect(() => {
@@ -95,22 +90,18 @@ export const AuthProvider = ({ children }) => {
       }
 
       try {
-        // Intentamos validar el token existente
         const res = await validateTokenRequest();
-
         if (res && res.data) {
           const userData = {
             name: res.data.user.name,
             email: res.data.user.email,
             role: res.data.user.role,
           };
-
           setUser(userData);
           setIsAuthenticated(true);
           localStorage.setItem("user", JSON.stringify(userData));
         } else {
           const refreshRes = await refreshTokenRequest(refreshToken);
-
           if (refreshRes && refreshRes.data) {
             const { token: newToken, refreshToken: newRefreshToken } = refreshRes.data;
 
@@ -120,7 +111,6 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem("token", newToken);
             localStorage.setItem("refreshToken", newRefreshToken);
 
-            // Actualizamos los datos del usuario
             const userData = {
               name: refreshRes.data.name,
               email: refreshRes.data.email,
@@ -141,7 +131,7 @@ export const AuthProvider = ({ children }) => {
           }
         }
       } catch (error) {
-        console.log("error catch");
+        console.error("Error al verificar JWT:", error);
         setUser(null);
         setIsAuthenticated(false);
         Cookies.remove("token");
