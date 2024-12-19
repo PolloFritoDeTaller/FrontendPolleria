@@ -95,7 +95,7 @@ const Header = () => {
           </div>
 
           {/* Menú de perfil, sucursales y carrito */}
-          <div className="flex items-center space-x-4">
+          <div className={`flex flex-col md:flex-row items-center space-x-0 md:space-x-4 w-full md:w-auto mt-2 md:mt-0`}>
             {/* Selección de sucursales */}
             <div className="relative" ref={branchMenuRef}>
               <button onClick={toggleBranchesMenu} className="flex items-center space-x-1">
@@ -103,7 +103,7 @@ const Header = () => {
                 <FaChevronDown className="text-xl md:text-2xl hover:text-yellow-300 transition-colors" />
               </button>
               {showBranches && (
-                <div className="absolute left-0 mt-2 w-48 bg-white text-gray-800 shadow-lg rounded-lg z-10">
+                <div className="absolute left-0 mt-2 w-48 bg-white text-gray-800 shadow-lg rounded-lg z-50">
                   {branches.length > 0 ? (
                     <ul className="max-h-48 overflow-y-auto custom-scrollbar">
                       {branches.map((branch) => (
@@ -143,9 +143,9 @@ const Header = () => {
               <span className="text-lg font-medium">{user.name}</span>
               <FaUser className="text-2xl" />
             </button>
-            <div className="fixed top-14 right-1" ref={userMenuRef}>
+            <div className="absolute top-14 right-1 z-50" ref={userMenuRef}>
               {showUserMenu && (
-                <div className="absolute right-0 top-full mt-2 w-48 bg-white text-red-600 shadow-lg rounded-lg z-10">
+                <div className="absolute right-0 top-full mt-2 w-48 bg-white text-red-600 shadow-lg rounded-lg z-50">
                   <ul>
                     <li
                       className="px-4 py-2 hover:bg-red-100 cursor-pointer rounded-t-lg"
