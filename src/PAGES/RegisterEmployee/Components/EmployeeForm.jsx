@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { FaEye, FaEyeSlash, FaChevronDown } from "react-icons/fa";
 import { useBranch } from "../../../CONTEXTS/BranchContext";
+import CloudinaryUploadWidget from "../../../GENERALCOMPONENTS/CloudinaryUploadWidget";
+
 
 const EmployeeForm = ({ onFormChange }) => {
   const [form, setForm] = useState({
@@ -14,7 +16,7 @@ const EmployeeForm = ({ onFormChange }) => {
     contractEnd: "",
     salary: "",
     role: "",
-    photo: null,
+    photo: "", // Ahora será la URL de Cloudinary
   });
 
   const [error, setError] = useState("");
@@ -22,6 +24,22 @@ const EmployeeForm = ({ onFormChange }) => {
   const [showBranches, setShowBranches] = useState(false);
   const branchesRef = useRef(null);
   const { branches, selectedBranch, setSelectedBranch } = useBranch();
+
+  const handleOnUpload = (error, result) => {
+    if (error) {
+      setError(error.message);
+      return;
+    }
+    
+    if (result.event === "success") {
+      const updatedForm = {
+        ...form,
+        photo: result.info.secure_url
+      };
+      setForm(updatedForm);
+      onFormChange(updatedForm);
+    }
+  };
 
   const validateForm = () => {
     // Validación básica de campos requeridos
@@ -292,22 +310,7 @@ const EmployeeForm = ({ onFormChange }) => {
         {/* Foto */}
         <div>
           <label className="block text-gray-700 font-medium">Foto</label>
-          <input
-            type="file"
-            name="photo"
-            accept="image/*"
-            onChange={(e) => {
-              const file = e.target.files[0];
-              // 5MB en bytes
-              if (file && file.size > 5 * 1024 * 1024) {
-                setError("La imagen no debe superar los 5MB");
-                e.target.value = null; // Limpiar el input
-                return;
-              }
-              handleChange(e);
-            }}
-            className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
-          />
+          <CloudinaryUploadWidget onUpload={handleOnUpload} />
         </div>
 
         <div className="flex justify-between mt-6">

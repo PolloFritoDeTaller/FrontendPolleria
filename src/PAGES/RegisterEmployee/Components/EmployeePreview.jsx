@@ -36,22 +36,22 @@ const EmployeePreview = ({ form }) => {
     setErrorMessage("");
 
     try {
-      const formData = new FormData();
-      formData.append("branchName", form.branchName); // Aseguramos que el nombre de la sucursal se envíe
-      formData.append("name", form.name);
-      formData.append("ci", form.ci);
-      formData.append("phone", form.phone);
-      formData.append("email", form.email);
-      formData.append("password", form.password);
-      formData.append("contractStart", form.contractStart);
-      formData.append("contractEnd", form.contractEnd);
-      formData.append("salary", form.salary);
-      formData.append("role", form.role);
+      // Ya no necesitamos FormData, enviamos el objeto directamente
+      const employeeData = {
+        branchName: form.branchName,
+        name: form.name,
+        ci: form.ci,
+        phone: form.phone,
+        email: form.email,
+        password: form.password,
+        contractStart: form.contractStart,
+        contractEnd: form.contractEnd,
+        salary: form.salary,
+        role: form.role,
+        photo: form.photo // URL de Cloudinary
+      };
 
-      if (form.photo) formData.append("photo", form.photo);
-
-      console.log("Datos del formulario:", formData); // Log para verificar datos antes de enviar
-      const response = await addEmployeeToBranchRequest(formData); // Envío de formData
+      const response = await addEmployeeToBranchRequest(employeeData);
 
       if (!response) {
         throw new Error("Error al guardar el empleado");
@@ -102,10 +102,9 @@ const EmployeePreview = ({ form }) => {
           <div>
             <p className="font-medium">Foto:</p>
             <img
-              src={URL.createObjectURL(form.photo)}
+              src={form.photo} // Ahora usamos directamente la URL de Cloudinary
               alt="Foto del empleado"
               className="w-32 h-32 object-cover rounded-full border border-gray-300"
-              onLoad={() => URL.revokeObjectURL(URL.createObjectURL(form.photo))}
             />
           </div>
         )}
