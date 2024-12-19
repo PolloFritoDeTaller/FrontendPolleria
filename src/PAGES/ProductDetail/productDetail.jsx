@@ -217,7 +217,7 @@ const ProductDetails = () => {
               onChange={(e) =>
                 setEditProduct({ ...editProduct, nameProduct: e.target.value })
               }
-              maxLength={30}
+              maxLength={40}
               className="w-full p-2 mb-4 border border-gray-300 rounded"
             />
 
@@ -241,6 +241,7 @@ const ProductDetails = () => {
                 setEditProduct({ ...editProduct, description: e.target.value })
               }
               maxLength={100}
+              rows="4"
               className="w-full p-2 mb-4 border border-gray-300 rounded"
             />
 
