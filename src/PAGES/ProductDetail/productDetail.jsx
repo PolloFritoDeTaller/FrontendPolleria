@@ -7,6 +7,7 @@ import { FaEdit, FaTrash, FaShoppingCart, FaBook } from 'react-icons/fa';
 import QuestionMessage from "../../GENERALCOMPONENTS/QuestionMessage";
 import { useAuth } from '../../GENERALCOMPONENTS/AuthContext'; // Asumimos que existe este contexto
 import { API } from '../../api/conf/routeApi';
+import CloudinaryUploadWidget from "../../GENERALCOMPONENTS/CloudinaryUploadWidget";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -57,19 +58,31 @@ const ProductDetails = () => {
     setEditProduct({ ...product });
   };
 
-  const handleEditSave = async () => {
-    const formData = new FormData();
-    formData.append("id", editProduct.id);
-    formData.append("nameProduct", editProduct.nameProduct);
-    formData.append("price", editProduct.price);
-    formData.append("description", editProduct.description);
-
-    if (editProduct.image instanceof File) {
-      formData.append("image", editProduct.image);
+  const handleImageUpload = (error, result) => {
+    if (error) {
+      console.error("Error al subir la imagen:", error);
+      return;
     }
+    
+    if (result.event === "success") {
+      setEditProduct({ 
+        ...editProduct, 
+        image: result.info.secure_url 
+      });
+    }
+  };
 
+  const handleEditSave = async () => {
     try {
-      const response = await editProductRequest(editProduct._id, formData);
+      const productData = {
+        id: editProduct.id,
+        nameProduct: editProduct.nameProduct,
+        price: editProduct.price,
+        description: editProduct.description,
+        image: editProduct.image
+      };
+
+      const response = await editProductRequest(editProduct._id, productData);
       setProduct(response.data.product);
       setIsEditing(false);
       setEditProduct(null);
@@ -107,7 +120,7 @@ const ProductDetails = () => {
       {product.image && (
         <div className="mb-6">
           <img
-            src={`${API}/uploads/${product.image}`}
+            src={product.image}
             alt={product.nameProduct}
             className="w-full h-64 object-cover rounded-lg shadow-md"
           />
@@ -173,15 +186,17 @@ const ProductDetails = () => {
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
             <h2 className="text-2xl font-bold mb-4">Editar Producto</h2>
 
-            <label className="block mb-2">Imagen:</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) =>
-                setEditProduct({ ...editProduct, image: e.target.files[0] })
-              }
-              className="w-full p-2 mb-4 border border-gray-300 rounded"
-            />
+            <div className="mb-4">
+              <label className="block mb-2">Imagen actual:</label>
+              {editProduct.image && (
+                <img
+                  src={editProduct.image}
+                  alt="Imagen actual"
+                  className="w-full h-32 object-cover rounded mb-2"
+                />
+              )}
+              <CloudinaryUploadWidget onUpload={handleImageUpload} />
+            </div>
 
             <label className="block mb-2">ID:</label>
             <input

@@ -1,3 +1,16 @@
+// src/components/ViewProducts.jsx
+import React, { useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useBranch } from '../../CONTEXTS/BranchContext';
+import { FaBook, FaEdit, FaShoppingCart, FaTrash } from 'react-icons/fa';
+import { CartContext } from '../../CONTEXTS/cartContext';
+import { getProductsByBranchRequest, editProductRequest, deleteProductRequest } from "../../api/branch"; // Keep a single import line
+import QuestionMessage from "../../GENERALCOMPONENTS/QuestionMessage";
+import AcceptMessage from "../../GENERALCOMPONENTS/AcceptMessage";
+import { useAuth } from '../../GENERALCOMPONENTS/AuthContext';
+import { API } from '../../api/conf/routeApi';
+import CloudinaryUploadWidget from "../../GENERALCOMPONENTS/CloudinaryUploadWidget";
+
 const ViewProducts = () => {
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");  // Para el término de búsqueda
@@ -51,18 +64,16 @@ const ViewProducts = () => {
 
   const handleEditSave = async () => {
     try {
-      const formData = new FormData();
-      formData.append("id", editProduct.id);
-      formData.append("nameProduct", editProduct.nameProduct);
-      formData.append("price", editProduct.price);
-      formData.append("description", editProduct.description);
-
-      if (editProduct.image instanceof File) {
-        formData.append("image", editProduct.image);
-      }
-
-      const response = await editProductRequest(editProduct._id, formData);
-
+      const productData = {
+        id: editProduct.id,
+        nameProduct: editProduct.nameProduct,
+        price: editProduct.price,
+        description: editProduct.description,
+        image: editProduct.image // Ahora es la URL de Cloudinary
+      };
+  
+      const response = await editProductRequest(editProduct._id, productData);
+  
       setProducts((prevProducts) =>
         prevProducts.map((product) =>
           product._id === editProduct._id ? response.data.product : product
@@ -96,6 +107,21 @@ const ViewProducts = () => {
     }
   };
 
+  const handleImageUpload = (error, result) => {
+    if (error) {
+      console.error("Error al subir la imagen:", error);
+      setErrorMessage("Error al subir la imagen. Por favor, intente de nuevo.");
+      return;
+    }
+    
+    if (result.event === "success") {
+      setEditProduct({ 
+        ...editProduct, 
+        image: result.info.secure_url 
+      });
+    }
+  };
+
   const handleCancelDelete = () => setProductToDelete(null);
 
   return (
@@ -118,7 +144,7 @@ const ViewProducts = () => {
             >
               {product.image && (
                 <img
-                  src={`${API}/uploads/${product.image}`}
+                  src={product.image}
                   alt={product.nameProduct}
                   className="w-full h-48 object-cover rounded-t-lg"
                 />
@@ -218,12 +244,9 @@ const ViewProducts = () => {
               className="w-full p-2 mb-4 border border-gray-300 rounded"
             />
             <label className="block mb-2">Imagen:</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setEditProduct({ ...editProduct, image: e.target.files[0] })}
-              className="w-full p-2 mb-4 border border-gray-300 rounded"
-            />
+            <CloudinaryUploadWidget onUpload={handleImageUpload} />
+
+            {/* Campo para editar el ID */}
             <label className="block mb-2">ID:</label>
             <input
               type="text"
