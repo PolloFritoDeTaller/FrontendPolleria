@@ -23,11 +23,10 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const { clearCart } = useCart();
 
-  console.log("hola");
-
   const signIn = async (data) => {
     try {
       const res = await loginRequest(data, { withCredentials: true });
+
 
       if (res && res.data) {
         const { foundUser } = res.data;
@@ -56,7 +55,6 @@ export const AuthProvider = ({ children }) => {
   // Función para cerrar sesión
   const logOut = async () => {
     try {
-      console.log("logout");
       await logoutRequest();
       Cookies.remove("token");
       Cookies.remove("refreshToken");
@@ -80,27 +78,18 @@ export const AuthProvider = ({ children }) => {
       const token = Cookies.get("token");
       const refreshToken = Cookies.get("refreshToken");
 
-      console.log(Cookies.get());
-      console.log("token",token)
-      console.log("token1", Cookies.token);
-      console.log("Restoken",refreshToken)
-      console.log("Restoken1", Cookies.refreshToken);
-
       if (!token && !refreshToken) {
-        console.log("true y return");
+
         setUser(null);
         setIsAuthenticated(false);
         setIsLoading(false);
         return;
       }
-
       try {
         // Intentamos validar el token existente
-        console.log("validando");
         const res = await validateTokenRequest();
 
         if (res && res.data) {
-          console.log("primer if del try");
           const userData = {
             name: res.data.user.name,
             email: res.data.user.email,
@@ -114,10 +103,8 @@ export const AuthProvider = ({ children }) => {
 
         } else {
           const refreshRes = await refreshTokenRequest(refreshToken);
-          console.log("refresh", refreshRes);
 
           if (refreshRes && refreshRes.data) {
-            console.log("refresh y refresh data")
             const { token: newToken, refreshToken: newRefreshToken } = refreshRes.data;
 
             // Guardamos los nuevos tokens en las cookies
@@ -139,7 +126,6 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem("user", JSON.stringify(userData));
           } else {
             // Si no se pudo refrescar el token, cerramos sesión
-            console.log("no se pudo refrescar")
             setUser(null);
             setIsAuthenticated(false);
             Cookies.remove("token");
@@ -148,7 +134,6 @@ export const AuthProvider = ({ children }) => {
           }
         }
       } catch (error) {
-        console.log("error catch")
         setUser(null);
         setIsAuthenticated(false);
         Cookies.remove("token");
