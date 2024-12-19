@@ -2,6 +2,7 @@ import { createContext, useState, useContext, useEffect } from "react";
 import { loginRequest, logoutRequest, validateTokenRequest, refreshTokenRequest } from "../api/authentication";
 import Cookies from "js-cookie";
 import { useCart } from "../CONTEXTS/cartContext";
+import { useNavigate } from "react-router-dom"; // Añadir useNavigate
 
 // Creamos el contexto de autenticación
 export const AuthContext = createContext();
@@ -22,6 +23,7 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(!!Cookies.get("token") || localStorage.getItem("token"));
   const [isLoading, setIsLoading] = useState(true);
   const { clearCart } = useCart();
+  const navigate = useNavigate();  // Hook para navegación
 
   // Función para iniciar sesión
   const signIn = async (data) => {
@@ -70,6 +72,7 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       setIsAuthenticated(false);
       clearCart();
+      navigate("/login");  // Redirigir al login tras cerrar sesión
     } catch (e) {
       console.log("Error al cerrar sesión:", e);
     }
@@ -138,6 +141,7 @@ export const AuthProvider = ({ children }) => {
             localStorage.removeItem("user");
             localStorage.removeItem("token");
             localStorage.removeItem("refreshToken");
+            navigate("/login");  // Redirigir al login si no se puede refrescar el token
           }
         }
       } catch (error) {
@@ -149,6 +153,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem("user");
         localStorage.removeItem("token");
         localStorage.removeItem("refreshToken");
+        navigate("/login");  // Redirigir al login si ocurre un error
       } finally {
         setIsLoading(false);
       }
