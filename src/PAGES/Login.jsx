@@ -25,7 +25,12 @@ const Login = () => {
       return setError(res.error.response.data.message);
     }
 
-    navigate("/inicio"); // Redirige a la página de inicio después de un inicio de sesión exitoso
+    // Asumiendo que el backend devuelve el token en res.token
+    const token = res.token;  // Aquí debes ajustar según la respuesta real de tu API
+    localStorage.setItem("authToken", token); // Guarda el token en localStorage
+
+    // Redirige a la página de inicio después de un inicio de sesión exitoso
+    navigate("/inicio"); 
   };
 
   const togglePasswordVisibility = () => {
