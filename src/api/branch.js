@@ -75,10 +75,16 @@ export const deleteBranchImage = (branchId, imageId) => {
 
 export const addProductToBranchRequest = (data) => axios.post(`${API}/branch/products/addProduct`, data);
 
-export const getProductsByBranchRequest = (nameBranch) => 
-  axios.post(`${API}/branch/getProducts`, { 
-    nameBranch: nameBranch?.toLowerCase() // Asegura que el nombre esté en minúsculas
+export const getProductsByBranchRequest = (nameBranch) => {
+  // Add error handling and proper URL construction
+  if (!nameBranch) {
+    return Promise.reject(new Error('Branch name is required'));
+  }
+  
+  return axios.post(`${API}/branch/products/getProducts`, {
+    nameBranch: nameBranch?.toLowerCase()
   });
+};
   
 export const editProductRequest = (id, data) => axios.put(`${API}/branch/products/editProduct/${id}`, data);
 

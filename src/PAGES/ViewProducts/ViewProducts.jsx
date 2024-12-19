@@ -24,16 +24,39 @@ const ViewProducts = () => {
   const { user } = useAuth();
   const userRole = user ? user.role : null;
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await getProductsByBranchRequest(selectedBranch);
-        setProducts(response.data.products);
-      } catch (error) {
-        console.error("Error al obtener los productos:", error);
+  const fetchProducts = async () => {
+    try {
+      if (!selectedBranch) {
+        console.warn('No branch selected');
+        return;
       }
-    };
-    fetchProducts();
+  
+      console.log('Fetching products for branch:', selectedBranch);
+      console.log('API URL:', `${API}/branch/products/getProducts`);
+  
+      const response = await getProductsByBranchRequest(selectedBranch);
+      console.log('API Response:', response);
+  
+      if (response && response.data && response.data.products) {
+        setProducts(response.data.products);
+      } else {
+        console.warn('No products data in response:', response);
+        setProducts([]);
+      }
+    } catch (error) {
+      console.error("Error details:", {
+        message: error.message,
+        response: error.response,
+        status: error?.response?.status
+      });
+      setErrorMessage("Error al cargar los productos. Por favor, intente nuevamente.");
+    }
+  };
+
+  useEffect(() => {
+    if (selectedBranch) {
+      fetchProducts();
+    }
   }, [selectedBranch]);
 
   // Filtrar productos según el término de búsqueda
