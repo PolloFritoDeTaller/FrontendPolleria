@@ -39,9 +39,10 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("token", token);
         localStorage.setItem("refreshToken", refreshToken);
 
-        // Establecemos cookies con configuraciones adecuadas
-        Cookies.set("token", token, { expires: 1, secure: true, sameSite: "None" }); // 1 día de expiración
-        Cookies.set("refreshToken", refreshToken, { expires: 7, secure: true, sameSite: "None" }); // 7 días de expiración
+        // Asegurarse de que el entorno de producción se use HTTPS para secure cookies
+        const isSecure = process.env.NODE_ENV === 'production'; // Solo en producción se establece 'secure: true'
+        Cookies.set("token", token, { expires: 1, secure: isSecure, sameSite: "None" });
+        Cookies.set("refreshToken", refreshToken, { expires: 7, secure: isSecure, sameSite: "None" });
 
         setUser({
           name: foundUser.name,
@@ -95,7 +96,6 @@ export const AuthProvider = ({ children }) => {
         const res = await validateTokenRequest();
 
         if (res && res.data) {
-          // Si el token es válido, actualizamos el estado de usuario
           const userData = {
             name: res.data.user.name,
             email: res.data.user.email,
@@ -107,13 +107,13 @@ export const AuthProvider = ({ children }) => {
         } else {
           // Si el token ha expirado, se refresca el token
           const refreshRes = await refreshTokenRequest(refreshToken);
-          
           if (refreshRes && refreshRes.data) {
             const { token: newToken, refreshToken: newRefreshToken } = refreshRes.data;
 
             // Guardamos los nuevos tokens en localStorage y cookies
-            Cookies.set("token", newToken, { expires: 1, secure: true, sameSite: "None" });
-            Cookies.set("refreshToken", newRefreshToken, { expires: 7, secure: true, sameSite: "None" });
+            const isSecure = process.env.NODE_ENV === 'production';
+            Cookies.set("token", newToken, { expires: 1, secure: isSecure, sameSite: "None" });
+            Cookies.set("refreshToken", newRefreshToken, { expires: 7, secure: isSecure, sameSite: "None" });
             localStorage.setItem("token", newToken);
             localStorage.setItem("refreshToken", newRefreshToken);
 
