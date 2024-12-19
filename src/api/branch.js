@@ -106,8 +106,11 @@ export const getWeeklyProfitsByBranchRequest = (nameBranch) =>
 
 export const addEmployeeToBranchRequest = (data) => axios.post(`${API}/branch/employees/addEmployee`, data);
 
-// Solicitud para obtener empleados por sucursal
-export const getEmployeesByBranchRequest = (branchName) => axios.get(`${API}/branch/employees/getEmployeesByBranch/${branchName}`);
+export const getEmployeesByBranchRequest = (branchName) => {
+  // Codificar el nombre de la sucursal para manejar espacios y caracteres especiales
+  const encodedBranchName = encodeURIComponent(branchName);
+  return axios.get(`${API}/branch/employees/getEmployeesByBranch/${encodedBranchName}`);
+};
 
 // Solicitud para obtener un empleado por ID
 export const getEmployeeByIdRequest = (id) => axios.get(`${API}/branch/employees/getEmployeeById/${id}`);

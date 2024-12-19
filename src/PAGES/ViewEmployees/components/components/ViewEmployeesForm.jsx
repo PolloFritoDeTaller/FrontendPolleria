@@ -24,28 +24,51 @@ const ViewEmployeesForm = ({ activeFilters }) => {
   const { selectedBranch } = useBranch();
 
   useEffect(() => {
-    const fetchFilteredEmployees = async () => {
+    const fetchEmployees = async () => {
       try {
-        const response = await getEmployeesWithFiltersRequest(selectedBranch, activeFilters);
-        let filteredEmployees = response.data.employees;
+        if (!selectedBranch) return;
 
-        if (activeFilters?.salaryRange?.min || activeFilters?.salaryRange?.max) {
-          filteredEmployees = filteredEmployees.filter(employee => {
-            const salary = Number(employee.salary);
-            const min = Number(activeFilters.salaryRange.min) || 0;
-            const max = Number(activeFilters.salaryRange.max) || Infinity;
-            return salary >= min && salary <= max;
-          });
+        const response = await getEmployeesByBranchRequest(selectedBranch);
+        let employeesData = response.data.employees;
+
+        // Aplicar filtros localmente si existen
+        if (activeFilters) {
+          if (activeFilters.salaryRange?.min || activeFilters.salaryRange?.max) {
+            employeesData = employeesData.filter(employee => {
+              const salary = Number(employee.salary);
+              const min = Number(activeFilters.salaryRange.min) || 0;
+              const max = Number(activeFilters.salaryRange.max) || Infinity;
+              return salary >= min && salary <= max;
+            });
+          }
+
+          if (activeFilters.role && activeFilters.role !== 'all') {
+            employeesData = employeesData.filter(employee => 
+              employee.role.toLowerCase() === activeFilters.role.toLowerCase()
+            );
+          }
+
+          if (activeFilters.contractStatus && activeFilters.contractStatus !== 'all') {
+            const today = new Date();
+            employeesData = employeesData.filter(employee => {
+              const endDate = new Date(employee.contractEnd);
+              return activeFilters.contractStatus === 'active' 
+                ? endDate >= today 
+                : endDate < today;
+            });
+          }
         }
 
-        setEmployees(filteredEmployees);
+        setEmployees(employeesData);
       } catch (error) {
-        setErrorMessage("Error al cargar los empleados");
+        console.error('Error al cargar empleados:', error);
+        setErrorMessage("Error al cargar los empleados: " + 
+          (error.response?.data?.message || error.message));
         setShowErrorMessage(true);
       }
     };
 
-    fetchFilteredEmployees();
+    fetchEmployees();
   }, [selectedBranch, activeFilters]);
 
   const handleEdit = (employee) => {
