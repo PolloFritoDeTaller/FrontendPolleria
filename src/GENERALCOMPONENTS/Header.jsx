@@ -1,10 +1,11 @@
-import { FaBars, FaUser, FaChevronDown, FaShoppingCart } from "react-icons/fa";
-import { useContext, useState, useRef, useEffect } from "react";
-import NavBar from "./NavBar";
-import { useAuth } from "../GENERALCOMPONENTS/AuthContext";
-import { Link, useNavigate } from "react-router-dom";
-import { useBranch } from "../CONTEXTS/BranchContext";
-import { CartContext } from "../CONTEXTS/cartContext";
+// src/GENERALCOMPONENTS/Header.jsx
+import { FaBars, FaUser, FaChevronDown, FaShoppingCart } from 'react-icons/fa';
+import { useContext, useState, useRef, useEffect } from 'react';
+import NavBar from './NavBar';
+import { useAuth } from '../GENERALCOMPONENTS/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
+import { useBranch } from '../CONTEXTS/BranchContext';
+import { CartContext } from '../CONTEXTS/cartContext';
 
 const Header = () => {
   useEffect(() => {
@@ -18,18 +19,18 @@ const Header = () => {
       if (
         userMenuRef.current &&
         !userMenuRef.current.contains(event.target) &&
-        event.target.closest(".user-menu-button") === null
+        event.target.closest('.user-menu-button') === null
       ) {
         setShowUserMenu(false);
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutSideToBranchMenu);
-    document.addEventListener("mousedown", handleClickOutSideToUserMenu);
+    document.addEventListener('mousedown', handleClickOutSideToBranchMenu);
+    document.addEventListener('mousedown', handleClickOutSideToUserMenu);
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutSideToBranchMenu);
-      document.removeEventListener("mousedown", handleClickOutSideToUserMenu);
+      document.removeEventListener('mousedown', handleClickOutSideToBranchMenu);
+      document.removeEventListener('mousedown', handleClickOutSideToUserMenu);
     };
   }, []);
 
@@ -78,106 +79,92 @@ const Header = () => {
 
   return (
     <>
-      {(userRole === "admin" || userRole === "client" || userRole === "worker") && (
-        <header className="fixed top-0 left-0 right-0 flex flex-col p-4 bg-red-600 text-white shadow-lg z-50 space-y-2">
-          {/* Texto de bienvenida */}
-          <div className="text-center md:hidden text-lg font-semibold">
-            Bienvenidos al Sistema de Administración
+      {(userRole === 'admin' || userRole === 'client' || userRole === 'worker') && (
+        <header className="fixed top-0 left-0 right-0 flex flex-col md:flex-row items-center justify-between p-4 bg-red-600 text-white shadow-lg space-y-2 md:space-y-0 z-50">
+          {/* Logo y Menú de navegación */}
+          <div className="flex items-center justify-between w-full md:w-auto">
+            <button onClick={toggleNavBar} className="text-3xl hover:text-yellow-300 transition-colors">
+              <FaBars />
+            </button>
+            <Link
+              to="/inicio"
+              className="text-2xl font-semibold hover:text-yellow-300 transition-colors ml-4"
+            >
+              Sistema de Administración
+            </Link>
           </div>
 
-          {/* Contenedor principal para navegación y menús */}
-          <div className="flex flex-wrap items-center justify-between md:flex-row">
-            {/* Logo y botón de menú */}
-            <div className="flex items-center justify-between w-full md:w-auto">
-              <button onClick={toggleNavBar} className="text-3xl hover:text-yellow-300 transition-colors">
-                <FaBars />
+          {/* Menú de perfil, sucursales y carrito */}
+          <div className="flex items-center space-x-4">
+            {/* Selección de sucursales */}
+            <div className="relative" ref={branchMenuRef}>
+              <button onClick={toggleBranchesMenu} className="flex items-center space-x-1">
+                <span className="text-sm md:text-base">{selectedBranch || 'Seleccionar Sucursal'}</span>
+                <FaChevronDown className="text-xl md:text-2xl hover:text-yellow-300 transition-colors" />
               </button>
-              <Link
-                to="/inicio"
-                className="hidden md:inline-block text-2xl font-semibold hover:text-yellow-300 transition-colors ml-4"
-              >
-                Sistema de Administración
-              </Link>
-            </div>
-
-            {/* Menús desplegables: sucursales y perfil */}
-            <div className="flex flex-col md:flex-row items-center md:space-x-4 w-full md:w-auto mt-2 md:mt-0">
-              {/* Selección de sucursales */}
-              <div className="relative w-full md:w-auto text-center md:text-left">
-                <button
-                  onClick={toggleBranchesMenu}
-                  className="flex items-center space-x-1 justify-center md:justify-start text-sm md:text-base"
-                >
-                  <span>{selectedBranch || "Seleccionar Sucursal"}</span>
-                  <FaChevronDown className="text-xl md:text-2xl hover:text-yellow-300 transition-colors" />
-                </button>
-                {showBranches && (
-                  <div
-                    className="absolute left-1/2 md:left-0 transform -translate-x-1/2 md:translate-x-0 mt-2 w-48 bg-white text-gray-800 shadow-lg rounded-lg z-10"
-                    ref={branchMenuRef}
-                  >
-                    {branches.length > 0 ? (
-                      <ul className="max-h-48 overflow-y-auto custom-scrollbar">
-                        {branches.map((branch) => (
-                          <li
-                            key={branch._id}
-                            className="px-4 py-2 hover:bg-gray-100 cursor-pointer transition-colors"
-                            onClick={() => handleBranchSelect(branch)}
-                          >
-                            {branch.nameBranch}
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <div className="px-4 py-2 text-gray-500">No hay sucursales disponibles</div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Menú de usuario */}
-              <div className="relative flex items-center space-x-4">
-                {userRole === "client" && (
-                  <Link to="/cart" className="relative text-white hover:text-yellow-300 transition-colors">
-                    <FaShoppingCart className="text-2xl" />
-                    {cartCount > 0 && (
-                      <span className="absolute -top-2 -right-2 bg-yellow-400 text-red-600 text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                        {cartCount}
-                      </span>
-                    )}
-                  </Link>
-                )}
-                <button
-                  onClick={toggleUserMenu}
-                  className="user-menu-button flex items-center space-x-2 bg-white text-red-600 py-1 px-3 mr-2 rounded-full shadow-md hover:bg-gray-100 transition-colors"
-                >
-                  <span className="text-lg font-medium">{user.name}</span>
-                  <FaUser className="text-2xl" />
-                </button>
-                <div className="fixed top-14 right-1" ref={userMenuRef}>
-                  {showUserMenu && (
-                    <div className="absolute right-0 top-full mt-2 w-48 bg-white text-red-600 shadow-lg rounded-lg z-10">
-                      <ul>
+              {showBranches && (
+                <div className="absolute left-0 mt-2 w-48 bg-white text-gray-800 shadow-lg rounded-lg z-10">
+                  {branches.length > 0 ? (
+                    <ul className="max-h-48 overflow-y-auto custom-scrollbar">
+                      {branches.map((branch) => (
                         <li
-                          className="px-4 py-2 hover:bg-red-100 cursor-pointer rounded-t-lg"
-                          onClick={handleOptionUserMenuSelect}
+                          key={branch._id}
+                          className="px-4 py-2 hover:bg-gray-100 cursor-pointer transition-colors"
+                          onClick={() => handleBranchSelect(branch)}
                         >
-                          <Link to="/profile">Ver Usuario</Link>
+                          {branch.nameBranch}
                         </li>
-                        <li
-                          className="px-4 py-2 hover:bg-red-100 cursor-pointer rounded-b-lg"
-                          onClick={() => {
-                            handleOptionUserMenuSelect();
-                            setShowModal(true);
-                          }}
-                        >
-                          Cerrar Sesión
-                        </li>
-                      </ul>
-                    </div>
+                      ))}
+                    </ul>
+                  ) : (
+                    <div className="px-4 py-2 text-gray-500">No hay sucursales disponibles</div>
                   )}
                 </div>
-              </div>
+              )}
+            </div>
+
+            {/* Carrito (solo para clientes) */}
+            {userRole === 'client' && (
+              <Link to="/cart" className="relative text-white hover:text-yellow-300 transition-colors">
+                <FaShoppingCart className="text-2xl" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-yellow-400 text-red-600 text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+            )}
+
+            {/* Menú de usuario */}
+            <button
+              onClick={toggleUserMenu}
+              className="user-menu-button flex items-center space-x-2 bg-white text-red-600 py-1 px-3 rounded-full shadow-md hover:bg-gray-100 transition-colors"
+            >
+              <span className="text-lg font-medium">{user.name}</span>
+              <FaUser className="text-2xl" />
+            </button>
+            <div className="fixed top-14 right-1" ref={userMenuRef}>
+              {showUserMenu && (
+                <div className="absolute right-0 top-full mt-2 w-48 bg-white text-red-600 shadow-lg rounded-lg z-10">
+                  <ul>
+                    <li
+                      className="px-4 py-2 hover:bg-red-100 cursor-pointer rounded-t-lg"
+                      onClick={handleOptionUserMenuSelect}
+                    >
+                      <Link to="/profile">Ver Usuario</Link>
+                    </li>
+                    <li
+                      className="px-4 py-2 hover:bg-red-100 cursor-pointer rounded-b-lg"
+                      onClick={() => {
+                        handleOptionUserMenuSelect();
+                        setShowModal(true);
+                      }}
+                    >
+                      Cerrar Sesión
+                    </li>
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </header>
