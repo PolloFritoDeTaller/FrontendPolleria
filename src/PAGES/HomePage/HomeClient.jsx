@@ -65,7 +65,7 @@ const HomeClient = () => {
               className="relative rounded-xl overflow-hidden"
             >
               <img
-                src={`${API}/uploads/${product.image}`}
+                src={product.image}
                 alt={product.nameProduct}
                 className="w-full h-64 sm:h-80 object-cover transition-transform duration-500 ease-in-out transform hover:scale-105"
               />
@@ -94,7 +94,7 @@ const HomeClient = () => {
                 className="bg-white rounded-lg shadow-xl p-6 transform hover:scale-105 transition-transform duration-300"
               >
                 <img
-                  src={`${API}/uploads/${promotion.image}`}
+                  src={promotion.image}
                   alt={promotion.title}
                   className="w-full h-48 object-cover rounded-lg mb-4"
                 />
@@ -123,7 +123,7 @@ const HomeClient = () => {
               className="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300"
             >
               <img
-                src={`${API}/uploads/${product.image}`}
+                src={product.image}
                 alt={product.nameProduct}
                 className="w-full h-48 sm:h-56 object-cover"
               />

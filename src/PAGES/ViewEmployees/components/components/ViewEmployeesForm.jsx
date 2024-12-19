@@ -201,6 +201,7 @@ const ViewEmployeesForm = ({ activeFilters }) => {
               placeholder="Nombre"
               value={editEmployee.name}
               onChange={(e) => setEditEmployee({ ...editEmployee, name: e.target.value })}
+              maxLength={40}
               className="w-full p-3 mb-4 border border-gray-300 rounded"
             />
             <input
@@ -214,6 +215,7 @@ const ViewEmployeesForm = ({ activeFilters }) => {
                 }
               }}
               min="1"
+              maxLength={5}
               className="w-full p-3 mb-4 border border-gray-300 rounded"
             />
             <input
@@ -221,6 +223,7 @@ const ViewEmployeesForm = ({ activeFilters }) => {
               placeholder="Correo"
               value={editEmployee.email}
               onChange={(e) => setEditEmployee({ ...editEmployee, email: e.target.value })}
+              maxLength={50}
               className="w-full p-3 mb-4 border border-gray-300 rounded"
             />
             <select

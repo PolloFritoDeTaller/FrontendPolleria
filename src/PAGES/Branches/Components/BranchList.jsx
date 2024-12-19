@@ -164,7 +164,7 @@ const BranchList = () => {
                   name="nameBranch"
                   value={editedBranch.nameBranch}
                   onChange={handleChange}
-                  maxLength={25}
+                  maxLength={40}
                   className="mt-1 p-2 w-full border border-gray-300 rounded-md"
                 />
               </div>
@@ -175,7 +175,7 @@ const BranchList = () => {
                   name="address"
                   value={editedBranch.address}
                   onChange={handleChange}
-                  maxLength={30}
+                  maxLength={50}
                   className="mt-1 p-2 w-full border border-gray-300 rounded-md"
                 />
               </div>
@@ -186,6 +186,7 @@ const BranchList = () => {
                   name="phone"
                   value={editedBranch.phone}
                   onChange={handleChange}
+                  maxLength={8}
                   className="mt-1 p-2 w-full border border-gray-300 rounded-md"
                 />
               </div>
