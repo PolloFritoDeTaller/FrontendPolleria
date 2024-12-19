@@ -28,6 +28,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       const response = await loginRequest(credentials);
+      // Guardar los tokens en las cookies con propiedades adicionales de seguridad
       Cookies.set('token', response.data.token, { expires: 7, secure: true, sameSite: 'Strict' });
       Cookies.set('refreshToken', response.data.refreshToken, { expires: 7, secure: true, sameSite: 'Strict' });
       setAuthState({
@@ -42,6 +43,7 @@ export const AuthProvider = ({ children }) => {
 
   // Función para manejar logout
   const logout = () => {
+    // Eliminar los tokens de las cookies
     Cookies.remove('token');
     Cookies.remove('refreshToken');
     setAuthState({
@@ -49,7 +51,7 @@ export const AuthProvider = ({ children }) => {
       refreshToken: null,
       isAuthenticated: false,
     });
-    logoutRequest(); // Puedes llamar a tu API de logout si es necesario
+    logoutRequest(); // Llamar a tu API de logout si es necesario
   };
 
   // Función para refrescar el token
@@ -58,6 +60,7 @@ export const AuthProvider = ({ children }) => {
     if (refreshToken) {
       try {
         const response = await refreshTokenRequest(refreshToken);
+        // Guardar los nuevos tokens en las cookies con las propiedades de seguridad
         Cookies.set('token', response.data.token, { expires: 7, secure: true, sameSite: 'Strict' });
         Cookies.set('refreshToken', response.data.refreshToken, { expires: 7, secure: true, sameSite: 'Strict' });
         setAuthState({
