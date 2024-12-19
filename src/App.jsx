@@ -48,10 +48,6 @@ function Main() {
 
   if (isLoading) return <div>Cargando...</div>;
 
-  /*if (!isAuthenticated && location.pathname !== '/login') {
-    return <Navigate to="/login" />;
-  }*/
-
   const noMarginRoutes = ['/login', '/registro', '/pago/tarjeta', '/'];
 
   return (
@@ -67,10 +63,8 @@ function Main() {
           <Route path="/pago/tarjeta" element={<PrivateRoute allowedRoles={["admin", "worker"]}><CardDetailsPage /></PrivateRoute>} />
 
           <Route path="/inicio" element={<PrivateRoute allowedRoles={["admin", "worker", "client"]}><Home /></PrivateRoute>} />
-          <Route path="/profile" element={<PrivateRoute allowedRoles={["admin", "worker", "client"]}> <UserProfile /> </PrivateRoute>} />
-          <Route path="/productos/registrarProducto" element={<PrivateRoute allowedRoles={["admin"]}> <RegisterProduct /> </PrivateRoute>} />
-
-
+          <Route path="/profile" element={<PrivateRoute allowedRoles={["admin", "worker", "client"]}><UserProfile /></PrivateRoute>} />
+          <Route path="/productos/registrarProducto" element={<PrivateRoute allowedRoles={["admin"]}><RegisterProduct /></PrivateRoute>} />
           <Route path="/productos/menu" element={<PrivateRoute allowedRoles={["admin", "worker", "client"]}><ViewProducts /></PrivateRoute>} />
           <Route path="/productos/editar-receta" element={<PrivateRoute allowedRoles={["admin", "worker"]}><EditRecipeProduct /></PrivateRoute>} />
           <Route path="/ventas/nuevaVenta" element={<PrivateRoute allowedRoles={["admin", "worker"]}><RegisterSale /></PrivateRoute>} />
