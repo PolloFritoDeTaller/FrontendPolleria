@@ -35,7 +35,7 @@ const Index = () => {
     }, [products, searchTerm]);
 
     return (
-        <div style={{ minHeight: "120vh" }} className="flex flex-col">
+        <div style={{ minHeight: "100vh" }} className="flex flex-col">
             <PublicHeader />
 
             {/* Imagen de encabezado */}
