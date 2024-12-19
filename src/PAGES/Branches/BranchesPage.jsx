@@ -4,18 +4,18 @@ import RegisterBranch from "./Components/RegisterBranch";
 import { FaImage, FaTextWidth, FaEdit } from "react-icons/fa";
 import { addImageToBranchesRequest, addTextToBranchesRequest, getBranchsRequest } from "../../api/branch";
 import { useBranch } from "../../CONTEXTS/BranchContext";
+import CloudinaryUploadWidget from "../../GENERALCOMPONENTS/CloudinaryUploadWidget";
 
 const BranchesPage = () => {
   const [showManageBranches, setShowManageBranches] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedBranches, setSelectedBranches] = useState([]); 
-  const [imageFile, setImageFile] = useState(null); 
+  const [imageUrl, setImageUrl] = useState(""); 
   const [textContent, setTextContent] = useState(""); 
   const [branches, setBranches] = useState([]); 
   const [loading, setLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false); // Estado para mostrar el modal
+  const [showModal, setShowModal] = useState(false);
 
-  // Función para obtener las sucursales desde la API
   useEffect(() => {
     const fetchBranches = async () => {
       setLoading(true);
@@ -31,16 +31,23 @@ const BranchesPage = () => {
     fetchBranches();
   }, []);
 
-  const handleManageBranchesClick = () => {
-    setShowManageBranches(!showManageBranches);
-    setSelectedOption(null); 
-    setSelectedBranches([]); 
-    setImageFile(null); 
-    setTextContent(""); 
+  const handleOnUpload = (error, result) => {
+    if (error) {
+      console.error("Error uploading image:", error);
+      return;
+    }
+    
+    if (result.event === "success") {
+      setImageUrl(result.info.secure_url);
+    }
   };
 
-  const handleImageChange = (e) => {
-    setImageFile(e.target.files[0]);
+  const handleManageBranchesClick = () => {
+    setShowManageBranches(!showManageBranches);
+    setSelectedOption(null);
+    setSelectedBranches([]);
+    setImageUrl("");
+    setTextContent("");
   };
 
   const handleBranchSelection = (branchId) => {
@@ -61,50 +68,50 @@ const BranchesPage = () => {
 
   const handleConfirm = () => {
     if (
-      (selectedOption === "image" && imageFile && selectedBranches.length > 0) ||
+      (selectedOption === "image" && imageUrl && selectedBranches.length > 0) ||
       (selectedOption === "text" && textContent.trim().length > 0 && selectedBranches.length > 0)
     ) {
-      setShowModal(true); // Mostrar el modal de confirmación
+      setShowModal(true);
     }
   };
 
   const handleModalConfirm = async () => {
     try {
-      if (selectedOption === "image" && imageFile) {
-        await addImageToBranchesRequest(
-          imageFile,
-          selectedBranches.length === branches.length ? ["all"] : selectedBranches
-        );
+      if (selectedOption === "image" && imageUrl) {
+        const imageData = {
+          imageUrl: imageUrl,
+          branchIds: selectedBranches.length === branches.length ? ["all"] : selectedBranches
+        };
+        
+        console.log('Sending data:', imageData); // Para debug
+        const response = await addImageToBranchesRequest(imageData);
+        console.log('Response:', response); // Para debug
+  
+        // Resto del código...
+        setShowManageBranches(false);
+        setSelectedOption(null);
+        setSelectedBranches([]);
+        setImageUrl("");
+        setTextContent("");
+        setShowModal(false);
       }
-
-      if (selectedOption === "text" && textContent.trim().length > 0) {
-        await addTextToBranchesRequest(
-          textContent,
-          selectedBranches.length === branches.length ? ["all"] : selectedBranches
-        );
-      }
-
-      setShowManageBranches(false);
-      setSelectedOption(null);
-      setSelectedBranches([]);
-      setImageFile(null);
-      setTextContent("");
-      setShowModal(false); // Cerrar el modal
+  
+      // ... resto del código para texto
     } catch (error) {
-      console.error("Error al procesar la acción:", error);
-      alert("Hubo un error al procesar la acción.");
+      console.error("Error detallado:", error.response?.data); // Para ver el error específico del servidor
+      alert("Hubo un error al procesar la acción: " + (error.response?.data?.message || error.message));
     }
   };
 
   const handleModalCancel = () => {
-    setShowModal(false); // Cerrar el modal sin realizar acción
+    setShowModal(false);
   };
 
   const handleCancel = () => {
     setShowManageBranches(false);
     setSelectedOption(null);
     setSelectedBranches([]);
-    setImageFile(null);
+    setImageUrl("");
     setTextContent("");
   };
 
@@ -130,25 +137,31 @@ const BranchesPage = () => {
                 onClick={() => setSelectedOption("image")}
                 className={`${selectedOption === "image" ? "bg-green-500" : "bg-green-400"} text-white py-3 px-8 rounded-full hover:bg-green-600 transition-all`}
               >
-                <FaImage className="mr-2" /> Subir Imagen
+                <FaImage className="inline-block mr-2" /> Subir Imagen
               </button>
               <button
                 onClick={() => setSelectedOption("text")}
                 className={`${selectedOption === "text" ? "bg-blue-500" : "bg-blue-400"} text-white py-3 px-8 rounded-full hover:bg-blue-600 transition-all`}
               >
-                <FaTextWidth className="mr-2" /> Subir Texto
+                <FaTextWidth className="inline-block mr-2" /> Subir Texto
               </button>
             </div>
 
-            {/* Selección de imagen */}
             {selectedOption === "image" && (
               <div className="mt-6">
-                <input
-                  type="file"
-                  className="block w-full mb-4 p-2"
-                  onChange={handleImageChange}
-                />
-                <label className="text-lg">Selecciona las sucursales a las que deseas publicar esta imagen</label>
+                <CloudinaryUploadWidget onUpload={handleOnUpload} />
+                {imageUrl && (
+                  <div className="mt-4">
+                    <img 
+                      src={imageUrl} 
+                      alt="Preview" 
+                      className="max-w-xs mx-auto rounded-lg shadow-lg"
+                    />
+                  </div>
+                )}
+                <label className="text-lg block mt-4">
+                  Selecciona las sucursales a las que deseas publicar esta imagen
+                </label>
                 <button
                   onClick={handleSelectAllBranches}
                   className="bg-blue-500 text-white py-2 px-6 rounded-full mt-4 hover:bg-blue-600 transition-all"
@@ -178,7 +191,6 @@ const BranchesPage = () => {
               </div>
             )}
 
-            {/* Selección de texto */}
             {selectedOption === "text" && (
               <div className="mt-6">
                 <textarea
@@ -219,13 +231,12 @@ const BranchesPage = () => {
               </div>
             )}
 
-            {/* Botón de confirmación */}
             <div className="mt-8 text-center flex justify-center gap-4">
               <button
                 onClick={handleConfirm}
-                disabled={!(selectedBranches.length > 0 && (textContent.trim().length > 0 || imageFile))}
+                disabled={!(selectedBranches.length > 0 && (textContent.trim().length > 0 || imageUrl))}
                 className={`${
-                  !(selectedBranches.length > 0 && (textContent.trim().length > 0 || imageFile))
+                  !(selectedBranches.length > 0 && (textContent.trim().length > 0 || imageUrl))
                     ? "bg-gray-400"
                     : "bg-yellow-500"
                 } text-white py-3 px-8 rounded-full hover:bg-yellow-600 transition-all`}
@@ -242,20 +253,18 @@ const BranchesPage = () => {
           </div>
         )}
 
-        {/* Lista de sucursales y registro */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <BranchList />
           <RegisterBranch />
         </div>
       </div>
 
-      {/* Modal de confirmación */}
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
             <h3 className="text-xl font-semibold mb-4">Confirmar acción</h3>
             <p className="mb-6">¿Estás seguro de que deseas realizar esta acción?</p>
-            <div className="flex justify-end gap-4"> {/* Cambio aquí: justify-end */}
+            <div className="flex justify-end gap-4">
               <button
                 onClick={handleModalCancel}
                 className="bg-red-500 text-white py-2 px-4 rounded-full hover:bg-red-600"

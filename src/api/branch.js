@@ -6,15 +6,10 @@ export const getBranchsRequest = () => axios.get(`${API}/branches`);
 export const deleteBranchRequest = (id) => axios.delete(`${API}/branches/${id}`);
 export const editBranchRequest = (id, data) => axios.put(`${API}/branches/${id}`, data);
 
-export const addImageToBranchesRequest = (imageFile, branchIds) => {
-  const formData = new FormData();
-  formData.append('image', imageFile); // Agregar la imagen al FormData
-  formData.append('branchIds', JSON.stringify(branchIds)); // Agregar las sucursales seleccionadas al FormData
-
-  return axios.patch(`${API}/branches/add-image`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
+export const addImageToBranchesRequest = async (data) => {
+  return await axios.patch(`${API}/branches/add-image`, {
+    imageUrl: data.imageUrl,
+    branchIds: data.branchIds
   });
 };
 
