@@ -13,31 +13,47 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated: false,
   });
 
-  // Use Effect para actualizar el estado cuando los tokens cambian
+  // Verificar si el usuario ya está autenticado al cargar la página
   useEffect(() => {
     const token = Cookies.get('token');
     const refreshToken = Cookies.get('refreshToken');
-    setAuthState({
-      token,
-      refreshToken,
-      isAuthenticated: !!token, // Se considera autenticado si hay un token
-    });
-  }, []);
+    if (token) {
+      setAuthState({
+        token,
+        refreshToken,
+        isAuthenticated: true,
+      });
+    } else {
+      setAuthState({
+        token: null,
+        refreshToken: null,
+        isAuthenticated: false,
+      });
+    }
+  }, []);  // Se ejecuta solo una vez cuando se monta el componente
 
   // Función para manejar login
   const login = async (credentials) => {
     try {
       const response = await loginRequest(credentials);
-      // Guardar los tokens en las cookies con propiedades adicionales de seguridad
-      Cookies.set('token', response.data.token, { expires: 7, secure: true, sameSite: 'Strict' });
-      Cookies.set('refreshToken', response.data.refreshToken, { expires: 7, secure: true, sameSite: 'Strict' });
+      const { token, refreshToken } = response.data;
+
+      // Guardar los tokens en las cookies de forma segura
+      Cookies.set('token', token, { expires: 7, secure: true, sameSite: 'Strict' });
+      Cookies.set('refreshToken', refreshToken, { expires: 7, secure: true, sameSite: 'Strict' });
+
       setAuthState({
-        token: response.data.token,
-        refreshToken: response.data.refreshToken,
+        token,
+        refreshToken,
         isAuthenticated: true,
       });
     } catch (error) {
-      console.error('Login Error: ', error);
+      console.error('Login Error:', error);
+      setAuthState({
+        token: null,
+        refreshToken: null,
+        isAuthenticated: false,
+      });
     }
   };
 
@@ -46,31 +62,44 @@ export const AuthProvider = ({ children }) => {
     // Eliminar los tokens de las cookies
     Cookies.remove('token');
     Cookies.remove('refreshToken');
+    
     setAuthState({
       token: null,
       refreshToken: null,
       isAuthenticated: false,
     });
+
     logoutRequest(); // Llamar a tu API de logout si es necesario
   };
 
   // Función para refrescar el token
   const refreshToken = async () => {
     const refreshToken = Cookies.get('refreshToken');
-    if (refreshToken) {
-      try {
-        const response = await refreshTokenRequest(refreshToken);
-        // Guardar los nuevos tokens en las cookies con las propiedades de seguridad
-        Cookies.set('token', response.data.token, { expires: 7, secure: true, sameSite: 'Strict' });
-        Cookies.set('refreshToken', response.data.refreshToken, { expires: 7, secure: true, sameSite: 'Strict' });
-        setAuthState({
-          token: response.data.token,
-          refreshToken: response.data.refreshToken,
-          isAuthenticated: true,
-        });
-      } catch (error) {
-        console.error('Error al refrescar el token:', error);
-      }
+    if (!refreshToken) {
+      console.log("No refresh token found");
+      return;
+    }
+
+    try {
+      const response = await refreshTokenRequest(refreshToken);
+      const { token, refreshToken: newRefreshToken } = response.data;
+
+      // Guardar los nuevos tokens en las cookies con las propiedades de seguridad
+      Cookies.set('token', token, { expires: 7, secure: true, sameSite: 'Strict' });
+      Cookies.set('refreshToken', newRefreshToken, { expires: 7, secure: true, sameSite: 'Strict' });
+
+      setAuthState({
+        token,
+        refreshToken: newRefreshToken,
+        isAuthenticated: true,
+      });
+    } catch (error) {
+      console.error('Error al refrescar el token:', error);
+      setAuthState({
+        token: null,
+        refreshToken: null,
+        isAuthenticated: false,
+      });
     }
   };
 
