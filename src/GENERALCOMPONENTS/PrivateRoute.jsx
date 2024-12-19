@@ -7,7 +7,7 @@ const PrivateRoute = ({ allowedRoles }) => {
 
   if (isLoading) return <div>Cargando...</div>;
 
-  if (!isAuthenticated || (allowedRoles && !allowedRoles.includes(user?.role))) {
+  if ((allowedRoles && !allowedRoles.includes(user?.role))) {
     return <Navigate to="/login" replace />;
   }
 
