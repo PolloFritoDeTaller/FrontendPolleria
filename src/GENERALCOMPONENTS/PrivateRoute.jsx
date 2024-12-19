@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom"; // Importamos Navigate y Outlet
-import { useAuth } from "../CONTEXTS/AuthContext";  // Importamos el hook para acceder al contexto de autenticación
+import { useAuth } from "../GENERALCOMPONENTS/AuthContext";  // Importamos el hook para acceder al contexto de autenticación
 
 // Componente de Ruta Privada
 const PrivateRoute = () => {
