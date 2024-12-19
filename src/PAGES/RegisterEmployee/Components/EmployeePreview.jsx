@@ -1,71 +1,8 @@
 import { useEffect, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { registerEmployeeRequest } from "../../../api/employee";
-import { addEmployeeToBranchRequest } from "../../../api/branch";
 
 const EmployeePreview = ({ form }) => {
-  const [isFormComplete, setIsFormComplete] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-
-  useEffect(() => {
-    const requiredFields = [
-      "branchName", // Añadido branchName como campo obligatorio
-      "name",
-      "ci",
-      "phone",
-      "email",
-      "password",
-      "contractStart",
-      "contractEnd",
-      "salary",
-      "role",
-    ];
-    const isComplete = requiredFields.every(
-      (field) => form[field] && form[field] !== ""
-    );
-
-    setIsFormComplete(isComplete && (form.photo ? true : false));
-  }, [form]);
-
-  const handleSaveEmployee = async () => {
-    setIsSubmitting(true);
-    setSuccessMessage("");
-    setErrorMessage("");
-
-    try {
-      // Ya no necesitamos FormData, enviamos el objeto directamente
-      const employeeData = {
-        branchName: form.branchName,
-        name: form.name,
-        ci: form.ci,
-        phone: form.phone,
-        email: form.email,
-        password: form.password,
-        contractStart: form.contractStart,
-        contractEnd: form.contractEnd,
-        salary: form.salary,
-        role: form.role,
-        photo: form.photo // URL de Cloudinary
-      };
-
-      const response = await addEmployeeToBranchRequest(employeeData);
-
-      if (!response) {
-        throw new Error("Error al guardar el empleado");
-      }
-
-      setSuccessMessage("Empleado guardado exitosamente");
-      setIsSubmitting(false);
-      window.location.reload();
-    } catch (error) {
-      console.log("Error:", error);
-      setErrorMessage("Hubo un problema al guardar el empleado");
-      setIsSubmitting(false);
-    }
-  };
 
   return (
     <div className="p-6 bg-gray-100 shadow-lg rounded-lg max-h-full overflow-auto">
@@ -73,7 +10,6 @@ const EmployeePreview = ({ form }) => {
         Vista Previa del Empleado
       </h2>
       <div className="space-y-4">
-        {/* Mostrar los datos del formulario en la vista previa */}
         <p className="font-medium">Nombre: {form.name}</p>
         <p className="font-medium">CI: {form.ci}</p>
         <p className="font-medium">Celular: {form.phone}</p>
@@ -97,43 +33,15 @@ const EmployeePreview = ({ form }) => {
         <p className="font-medium">Salario: {form.salary}</p>
         <p className="font-medium">Rol: {form.role}</p>
 
-        {/* Vista previa de la foto si está cargada */}
         {form.photo && (
           <div>
             <p className="font-medium">Foto:</p>
             <img
-              src={form.photo} // Ahora usamos directamente la URL de Cloudinary
+              src={form.photo}
               alt="Foto del empleado"
               className="w-32 h-32 object-cover rounded-full border border-gray-300"
             />
           </div>
-        )}
-
-        {/* Botón para guardar el empleado */}
-        <div className="flex justify-between mt-6">
-          <button
-            onClick={handleSaveEmployee}
-            disabled={!isFormComplete || isSubmitting}
-            className={`p-2 rounded-md font-semibold ${
-              !isFormComplete || isSubmitting
-                ? "bg-gray-400"
-                : "bg-green-600 hover:bg-green-700"
-            } text-white transition duration-300`}
-          >
-            {isSubmitting ? "Guardando..." : "Guardar Empleado"}
-          </button>
-        </div>
-
-        {/* Mensajes de éxito y error */}
-        {successMessage && (
-          <p className="text-green-600 font-semibold text-center">
-            {successMessage}
-          </p>
-        )}
-        {errorMessage && (
-          <p className="text-red-600 font-semibold text-center">
-            {errorMessage}
-          </p>
         )}
       </div>
     </div>
