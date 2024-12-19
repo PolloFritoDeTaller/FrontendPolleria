@@ -39,8 +39,8 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("token", token);
         localStorage.setItem("refreshToken", refreshToken);
 
-        Cookies.set("token", token, { expires: 1 });
-        Cookies.set("refreshToken", refreshToken, { expires: 7 });
+        Cookies.set("token", token, { expires: 7 });  // Token expirando en 7 días
+        Cookies.set("refreshToken", refreshToken, { expires: 30 }); // refreshToken expirando en 30 días
 
         setUser({
           name: foundUser.name,
@@ -105,9 +105,9 @@ export const AuthProvider = ({ children }) => {
           if (refreshRes && refreshRes.data) {
             const { token: newToken, refreshToken: newRefreshToken } = refreshRes.data;
 
-            // Guardamos los nuevos tokens en localStorage y cookies
-            Cookies.set("token", newToken, { expires: 1 });
-            Cookies.set("refreshToken", newRefreshToken, { expires: 7 });
+            // Guardamos los nuevos tokens en localStorage y cookies con tiempos de expiración extendidos
+            Cookies.set("token", newToken, { expires: 7 });
+            Cookies.set("refreshToken", newRefreshToken, { expires: 30 });
             localStorage.setItem("token", newToken);
             localStorage.setItem("refreshToken", newRefreshToken);
 
