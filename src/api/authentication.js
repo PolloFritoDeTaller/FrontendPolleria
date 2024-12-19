@@ -6,7 +6,7 @@ import { API } from "./conf/routeApi.js";
 export const loginRequest = async (data) => {
   console.log("Enviando solicitud de login con:", data);
   try {
-    const response = await axios.post(`${API}/login`, data);
+    const response = await axios.post(`${API}/login`, data, { withCredentials: true }); // Agregado withCredentials
     console.log("Respuesta de login:", response);
     return response;
   } catch (error) {
@@ -18,13 +18,13 @@ export const loginRequest = async (data) => {
 // Función para hacer logout
 export const logoutRequest = () => {
   console.log("Logout realizado");
-  return axios.post(`${API}/logout`);
+  return axios.post(`${API}/logout`, {}, { withCredentials: true }); // Agregado withCredentials
 };
 
 // Función para validar el token de acceso
 export const validateTokenRequest = async () => {
   try {
-    const response = await axios.get(`${API}/verify-token`);
+    const response = await axios.get(`${API}/verify-token`, { withCredentials: true }); // Agregado withCredentials
     console.log("Token válido:", response);
     return response;
   } catch (error) {
@@ -36,14 +36,14 @@ export const validateTokenRequest = async () => {
 // Función para validar la contraseña
 export const validatePasswordRequest = user => {
   console.log("Validando contraseña para el usuario:", user);
-  return axios.post(`${API}/verifyPassword`, user);
+  return axios.post(`${API}/verifyPassword`, user, { withCredentials: true }); // Agregado withCredentials
 };
 
 // Función para actualizar los datos del usuario
 export const updateUserRequest = async (updatedUser) => {
   console.log("Actualizando usuario:", updatedUser);
   try {
-    const response = await axios.put(`/api/users/${updatedUser._id}`, updatedUser);
+    const response = await axios.put(`/api/users/${updatedUser._id}`, updatedUser, { withCredentials: true }); // Agregado withCredentials
     return response.data;
   } catch (error) {
     console.error('Error al actualizar el usuario', error);
@@ -61,7 +61,7 @@ export const refreshTokenRequest = async () => {
 
   console.log("Enviando solicitud para refrescar el token con refreshToken:", refreshToken);
   try {
-    const response = await axios.post(`${API}/refresh-token`, { refreshToken });
+    const response = await axios.post(`${API}/refresh-token`, { refreshToken }, { withCredentials: true }); // Agregado withCredentials
     console.log("Respuesta de refreshToken:", response);
     
     // Almacenar el nuevo token en las cookies
@@ -79,7 +79,7 @@ export const refreshTokenRequest = async () => {
 export const registerRequest = async (newUser) => {
   console.log("Registrando nuevo usuario:", newUser);
   try {
-    const response = await axios.post(`${API}/register`, newUser);
+    const response = await axios.post(`${API}/register`, newUser, { withCredentials: true }); // Agregado withCredentials
     return response.data; // Retorna los datos proporcionados por el backend
   } catch (error) {
     console.error('Error en registerRequest:', error.response?.data || error.message);
