@@ -109,7 +109,8 @@ const EmployeeForm = () => {
         contractStart: form.contractStart,
         contractEnd: form.contractEnd,
         salary: form.salary,
-        role: form.role,
+        position: "worker" ,
+        role: "worker",
         photo: imageUrl || null
       };
   
