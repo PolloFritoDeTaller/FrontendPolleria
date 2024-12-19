@@ -53,52 +53,66 @@ const SalesList = ({ sales }) => {
     });
   };
 
-  const handleViewDetails = (sale) => {
-    navigate(`/sales/seeSales/viewSale/${sale._id}`);
+  const handleViewDetails = (saleId) => {
+    navigate(`/sales/seeSales/viewSale/${saleId}`);
   };
 
   return (
-    <div className="overflow-y-auto h-96 border-t border-b">
-      <div className="flex justify-between items-center p-2 bg-gray-200 font-bold">
-        <span className="w-1/4">Cliente</span>
-        <span className="w-1/4">CI</span>
-        <span className="w-1/4">Monto Total</span>
-        <span className="w-1/4">Acciones</span>
-      </div>
-      {salesWithStatus.length === 0 ? (
-        <div className="p-4 text-center text-gray-500">No hay ventas disponibles</div>
-      ) : (
-        salesWithStatus.map((sale) => (
-          <div
-            key={sale._id}
-            className="flex justify-between items-center border-b p-2 hover:bg-gray-100"
-          >
-            <span className="w-1/4 truncate">{sale.clientName}</span>
-            <span className="w-1/4 truncate">{sale.clientCI}</span>
-            <span className="w-1/4 truncate">{sale.totalAmount}</span>
-            <div className="w-1/4 flex items-center gap-2">
-              <button
-                onClick={() => handleStatusClick(sale._id)}
-                className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  sale.status === SALE_STATUSES.IN_PROGRESS
-                    ? 'bg-yellow-200 text-yellow-800'
-                    : sale.status === SALE_STATUSES.FINISHED
-                    ? 'bg-green-200 text-green-800'
-                    : 'bg-red-200 text-red-800'
-                }`}
-              >
-                {sale.status}
-              </button>
-              <button
-                onClick={() => handleViewDetails(sale)}
-                className="px-3 py-1 text-white bg-blue-600 rounded-full text-sm hover:bg-blue-700 focus:outline-none"
-              >
-                Ver Detalles
-              </button>
-            </div>
-          </div>
-        ))
-      )}
+    <div className="overflow-x-auto">
+      <table className="table-auto w-full border-collapse border border-gray-300">
+        <thead className="bg-gray-200">
+          <tr>
+            <th className="border border-gray-300 p-2 text-left">Cliente</th>
+            <th className="border border-gray-300 p-2 text-left">CI</th>
+            <th className="border border-gray-300 p-2 text-left">Monto Total</th>
+            <th className="border border-gray-300 p-2 text-left">Fecha</th>
+            <th className="border border-gray-300 p-2 text-left">Estado</th>
+            <th className="border border-gray-300 p-2 text-left">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {salesWithStatus.length === 0 ? (
+            <tr>
+              <td colSpan="6" className="p-4 text-center text-gray-500">
+                No hay ventas disponibles
+              </td>
+            </tr>
+          ) : (
+            salesWithStatus.map((sale) => (
+              <tr key={sale._id} className="hover:bg-gray-100">
+                <td className="border border-gray-300 p-2">{sale.clientName}</td>
+                <td className="border border-gray-300 p-2">{sale.clientCI}</td>
+                <td className="border border-gray-300 p-2">{sale.totalAmount}</td>
+                <td className="border border-gray-300 p-2">
+                  {new Date(sale.saleDate).toLocaleDateString()}
+                </td>
+                <td className="border border-gray-300 p-2">
+                  <button
+                    onClick={() => handleStatusClick(sale._id)}
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      sale.status === SALE_STATUSES.IN_PROGRESS
+                        ? 'bg-yellow-200 text-yellow-800'
+                        : sale.status === SALE_STATUSES.FINISHED
+                        ? 'bg-green-200 text-green-800'
+                        : 'bg-red-200 text-red-800'
+                    }`}
+                  >
+                    {sale.status}
+                  </button>
+                </td>
+                <td className="border border-gray-300 p-2">
+                  <button
+                    onClick={() => handleViewDetails(sale._id)}
+                    className="px-3 py-1 text-white bg-blue-600 rounded-full text-sm hover:bg-blue-700 focus:outline-none"
+                  >
+                    Ver Detalles
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
     </div>
   );
 };
