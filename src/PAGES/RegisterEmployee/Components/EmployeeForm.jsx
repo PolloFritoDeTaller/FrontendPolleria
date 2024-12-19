@@ -72,12 +72,11 @@ const EmployeeForm = () => {
 
   const handleBranchSelect = (branchName) => {
     console.log('Seleccionando sucursal:', branchName);
-    const formattedBranchName = branchName.toLowerCase(); // Convertir a minúsculas
     setForm(prevForm => ({
       ...prevForm,
-      branchName: formattedBranchName
+      branchName: branchName  // Quitamos toLowerCase()
     }));
-    setSelectedBranch(formattedBranchName);
+    setSelectedBranch(branchName);  // Quitamos toLowerCase()
     setShowBranches(false);
   };
 
@@ -101,7 +100,7 @@ const EmployeeForm = () => {
       }
   
       const employeeData = {
-        branchName: selectedBranch.toLowerCase(), // Convertir a minúsculas
+        branchName: selectedBranch,  // Quitamos toLowerCase()
         name: form.name,
         ci: form.ci,
         phone: form.phone,
@@ -309,21 +308,18 @@ const EmployeeForm = () => {
           </div>
 
           {/* Rol */}
-          <div>
-            <label className="block text-gray-700 font-medium">Rol <span className="text-red-500">*</span></label>
-            <select
-              name="role"
-              value={form.role}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
-              required
-            >
-              <option value="">Seleccionar Rol</option>
-              <option value="Cajero">Cajero</option>
-              <option value="Cocinero">Cocinero</option>
-              <option value="Mesero">Mesero</option>
-            </select>
-          </div>
+          <select
+            name="role"
+            value={form.role}
+            onChange={handleChange}
+            className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
+            required
+          >
+            <option value="">Seleccionar Rol</option>
+            <option value="cajero">cajero</option>
+            <option value="cocinero">cocinero</option>
+            <option value="mesero">mesero</option>
+          </select>
 
           {/* Foto */}
           <div>
