@@ -10,15 +10,9 @@ const RegisterEmployee = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 p-4">
-      {/* Componente de Formulario */}
-      <div className="md:w-6/12 w-full max-h-screen">
+    <div className="container mx-auto p-4">
+      <div className="w-full max-w-3xl mx-auto">
         <EmployeeForm onFormChange={handleFormChange} />
-      </div>
-
-      {/* Componente de Vista Previa */}
-      <div className="md:w-6/12 w-full max-h-screen">
-        <EmployeePreview form={form} />
       </div>
     </div>
   );
