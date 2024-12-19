@@ -101,6 +101,8 @@ export const getWeeklyProfitsByBranchRequest = (nameBranch) =>
 
 export const addEmployeeToBranchRequest = (data) => axios.post(`${API}/branch/employees/addEmployee`, data);
 
+export const addEmployeeToUser = (data) => axios.post(`${API}/register`, data);
+
 export const getEmployeesByBranchRequest = (branchName) => {
   // Codificar el nombre de la sucursal para manejar espacios y caracteres especiales
   const encodedBranchName = encodeURIComponent(branchName);

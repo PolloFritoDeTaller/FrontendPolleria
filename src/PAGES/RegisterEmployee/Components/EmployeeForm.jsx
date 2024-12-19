@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { FaEye, FaEyeSlash, FaChevronDown } from "react-icons/fa";
 import { useBranch } from "../../../CONTEXTS/BranchContext";
-import { addEmployeeToBranchRequest } from "../../../api/branch.js";
+import { addEmployeeToBranchRequest, addEmployeeToUser } from "../../../api/branch.js";
 import CloudinaryUploadWidget from "../../../GENERALCOMPONENTS/CloudinaryUploadWidget";
 import QuestionMessage from "../../../GENERALCOMPONENTS/QuestionMessage";
 import AcceptMessage from "../../../GENERALCOMPONENTS/AcceptMessage";
@@ -113,10 +113,20 @@ const EmployeeForm = () => {
         role: "worker",
         photo: imageUrl || null
       };
-  
+      
+      const workerData = {
+        name: form.name,
+        phone: form.phone,
+        email: form.email,
+        password: form.password,
+        position: "worker" ,
+        role: "worker"
+      };
+
       console.log('Datos a enviar:', employeeData);
   
       const response = await addEmployeeToBranchRequest(employeeData);
+      const response2 = await addEmployeeToUser(workerData);
       console.log('Respuesta:', response.data);
   
       setForm({
