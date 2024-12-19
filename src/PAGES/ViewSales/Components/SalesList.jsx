@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 const SALE_STATUSES = {
   IN_PROGRESS: 'En Progreso',
@@ -22,7 +21,6 @@ const getNextStatus = (currentStatus) => {
 
 const SalesList = ({ sales }) => {
   const [salesWithStatus, setSalesWithStatus] = useState([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const savedStatuses = JSON.parse(localStorage.getItem('salesStatuses') || '{}');
@@ -53,10 +51,6 @@ const SalesList = ({ sales }) => {
     });
   };
 
-  const handleViewDetails = (saleId) => {
-    navigate(`/sales/seeSales/viewSale/${saleId}`);
-  };
-
   return (
     <div className="overflow-x-auto">
       <table className="table-auto w-full border-collapse border border-gray-300">
@@ -67,13 +61,12 @@ const SalesList = ({ sales }) => {
             <th className="border border-gray-300 p-2 text-left">Monto Total</th>
             <th className="border border-gray-300 p-2 text-left">Fecha</th>
             <th className="border border-gray-300 p-2 text-left">Estado</th>
-            <th className="border border-gray-300 p-2 text-left">Acciones</th>
           </tr>
         </thead>
         <tbody>
           {salesWithStatus.length === 0 ? (
             <tr>
-              <td colSpan="6" className="p-4 text-center text-gray-500">
+              <td colSpan="5" className="p-4 text-center text-gray-500">
                 No hay ventas disponibles
               </td>
             </tr>
@@ -98,14 +91,6 @@ const SalesList = ({ sales }) => {
                     }`}
                   >
                     {sale.status}
-                  </button>
-                </td>
-                <td className="border border-gray-300 p-2">
-                  <button
-                    onClick={() => handleViewDetails(sale._id)}
-                    className="px-3 py-1 text-white bg-blue-600 rounded-full text-sm hover:bg-blue-700 focus:outline-none"
-                  >
-                    Ver Detalles
                   </button>
                 </td>
               </tr>
