@@ -95,7 +95,7 @@ const Header = () => {
           </div>
 
           {/* Menú de perfil, sucursales y carrito */}
-          <div className={`flex flex-col md:flex-row items-center space-x-0 md:space-x-4 w-full md:w-auto mt-2 md:mt-0`}>
+          <div className="flex items-center space-x-4">
             {/* Selección de sucursales */}
             <div className="relative" ref={branchMenuRef}>
               <button onClick={toggleBranchesMenu} className="flex items-center space-x-1">
