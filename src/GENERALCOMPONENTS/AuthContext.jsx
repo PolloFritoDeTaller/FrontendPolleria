@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
-import { loginRequest, refreshTokenRequest, logoutRequest } from './api'; // Asume que estos son tus métodos de API
+import { loginRequest, refreshTokenRequest, logoutRequest } from '../api/authentication'; // Asume que estos son tus métodos de API
 
 const AuthContext = createContext();
 
