@@ -23,21 +23,26 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const { clearCart } = useCart();
 
-  console.log("hola");
-
+  // Función para iniciar sesión
   const signIn = async (data) => {
     try {
       const res = await loginRequest(data, { withCredentials: true });
 
       if (res && res.data) {
-        const { foundUser } = res.data;
+        const { foundUser, token, refreshToken } = res.data;
 
-
+        // Guardamos el usuario y los tokens en localStorage y cookies
         localStorage.setItem("user", JSON.stringify({
           name: foundUser.name,
           email: foundUser.email,
           role: foundUser.role,
         }));
+
+        localStorage.setItem("token", token);
+        localStorage.setItem("refreshToken", refreshToken);
+
+        Cookies.set("token", token, { expires: 1 });
+        Cookies.set("refreshToken", refreshToken, { expires: 7 });
 
         setUser({
           name: foundUser.name,
@@ -61,6 +66,8 @@ export const AuthProvider = ({ children }) => {
       Cookies.remove("token");
       Cookies.remove("refreshToken");
       localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
       setUser(null);
       setIsAuthenticated(false);
       clearCart();
@@ -77,17 +84,10 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const verifyJWT = async () => {
-      const token = Cookies.get("token");
-      const refreshToken = Cookies.get("refreshToken");
+      const token = localStorage.getItem("token") || Cookies.get("token");
+      const refreshToken = localStorage.getItem("refreshToken") || Cookies.get("refreshToken");
 
-      console.log(Cookies.get());
-      console.log("token",token)
-      console.log("token1", Cookies.token);
-      console.log("Restoken",refreshToken)
-      console.log("Restoken1", Cookies.refreshToken);
-
-      if (!token && !refreshToken) {
-        console.log("true y return");
+      if (!token || !refreshToken) {
         setUser(null);
         setIsAuthenticated(false);
         setIsLoading(false);
@@ -96,11 +96,9 @@ export const AuthProvider = ({ children }) => {
 
       try {
         // Intentamos validar el token existente
-        console.log("validando");
         const res = await validateTokenRequest();
 
         if (res && res.data) {
-          console.log("primer if del try");
           const userData = {
             name: res.data.user.name,
             email: res.data.user.email,
@@ -109,51 +107,48 @@ export const AuthProvider = ({ children }) => {
 
           setUser(userData);
           setIsAuthenticated(true);
-
           localStorage.setItem("user", JSON.stringify(userData));
-
         } else {
           const refreshRes = await refreshTokenRequest(refreshToken);
-          console.log("refresh", refreshRes);
 
           if (refreshRes && refreshRes.data) {
-            console.log("refresh y refresh data")
             const { token: newToken, refreshToken: newRefreshToken } = refreshRes.data;
 
-            // Guardamos los nuevos tokens en las cookies
+            // Guardamos los nuevos tokens en localStorage y cookies
             Cookies.set("token", newToken, { expires: 1 });
             Cookies.set("refreshToken", newRefreshToken, { expires: 7 });
+            localStorage.setItem("token", newToken);
+            localStorage.setItem("refreshToken", newRefreshToken);
 
             // Actualizamos los datos del usuario
             const userData = {
               name: refreshRes.data.name,
               email: refreshRes.data.email,
               role: refreshRes.data.role,
-              phone: refreshRes.data.phone,
-              university: refreshRes.data.university,
-              position: refreshRes.data.position,
             };
 
             setUser(userData);
             setIsAuthenticated(true);
             localStorage.setItem("user", JSON.stringify(userData));
           } else {
-            // Si no se pudo refrescar el token, cerramos sesión
-            console.log("no se pudo refrescar")
             setUser(null);
             setIsAuthenticated(false);
             Cookies.remove("token");
             Cookies.remove("refreshToken");
             localStorage.removeItem("user");
+            localStorage.removeItem("token");
+            localStorage.removeItem("refreshToken");
           }
         }
       } catch (error) {
-        console.log("error catch")
+        console.log("error catch");
         setUser(null);
         setIsAuthenticated(false);
         Cookies.remove("token");
         Cookies.remove("refreshToken");
         localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        localStorage.removeItem("refreshToken");
       } finally {
         setIsLoading(false);
       }
@@ -171,7 +166,7 @@ export const AuthProvider = ({ children }) => {
       isAuthenticated,
       isLoading,
     }}>
-      {!isLoading ? children : <div>Loading...</div>} {/* Solo muestra los hijos si la carga se completó */}
+      {!isLoading ? children : <div>Loading...</div>}
     </AuthContext.Provider>
   );
 };
