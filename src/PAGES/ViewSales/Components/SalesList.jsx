@@ -52,38 +52,54 @@ const SalesList = ({ sales }) => {
   };
 
   return (
-    <div className="overflow-x-auto">
-      <table className="table-auto w-full border-collapse border border-gray-300">
-        <thead className="bg-gray-200">
+    <div className="overflow-x-auto shadow-md rounded-lg">
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead className="bg-gray-50">
           <tr>
-            <th className="border border-gray-300 p-2 text-left">Cliente</th>
-            <th className="border border-gray-300 p-2 text-left">CI</th>
-            <th className="border border-gray-300 p-2 text-left">Monto Total</th>
-            <th className="border border-gray-300 p-2 text-left">Fecha</th>
-            <th className="border border-gray-300 p-2 text-left">Estado</th>
+            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Cliente
+            </th>
+            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              CI
+            </th>
+            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Monto Total
+            </th>
+            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Fecha
+            </th>
+            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Estado
+            </th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="bg-white divide-y divide-gray-200">
           {salesWithStatus.length === 0 ? (
             <tr>
-              <td colSpan="5" className="p-4 text-center text-gray-500">
+              <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
                 No hay ventas disponibles
               </td>
             </tr>
           ) : (
             salesWithStatus.map((sale) => (
-              <tr key={sale._id} className="hover:bg-gray-100">
-                <td className="border border-gray-300 p-2">{sale.clientName}</td>
-                <td className="border border-gray-300 p-2">{sale.clientCI}</td>
-                <td className="border border-gray-300 p-2">{sale.totalAmount}</td>
-                <td className="border border-gray-300 p-2">
-                  {new Date(sale.saleDate).toLocaleDateString()}
+              <tr key={sale._id} className="hover:bg-gray-50 transition-colors">
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-900">{sale.clientName}</div>
                 </td>
-                <td className="border border-gray-300 p-2">
-                  <button
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-900">{sale.clientCI}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-900">{sale.totalAmount}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-900">{new Date(sale.saleDate).toLocaleDateString()}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span
                     onClick={() => handleStatusClick(sale._id)}
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      sale.status === SALE_STATUSES.IN_PROGRESS
+                    className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
+                      ${sale.status === SALE_STATUSES.IN_PROGRESS
                         ? 'bg-yellow-200 text-yellow-800'
                         : sale.status === SALE_STATUSES.FINISHED
                         ? 'bg-green-200 text-green-800'
@@ -91,7 +107,7 @@ const SalesList = ({ sales }) => {
                     }`}
                   >
                     {sale.status}
-                  </button>
+                  </span>
                 </td>
               </tr>
             ))
