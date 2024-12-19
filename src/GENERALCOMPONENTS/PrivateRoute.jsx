@@ -7,9 +7,7 @@ const PrivateRoute = ({ allowedRoles }) => {
 
   if (isLoading) return <div>Cargando...</div>;
 
-  if ((allowedRoles && !allowedRoles.includes(user?.role))) {
-    return <Navigate to="/login" replace />;
-  }
+  
 
   // Si el usuario está autenticado y tiene permiso, renderiza las rutas hijas
   return Children;
