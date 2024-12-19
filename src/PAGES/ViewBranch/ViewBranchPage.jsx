@@ -8,20 +8,19 @@ import AcceptMessage from "../../GENERALCOMPONENTS/AcceptMessage"; // Componente
 import { API } from "../../api/conf/routeApi.js";
 
 const ViewBranchPage = () => {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const [branch, setBranch] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState(null); // El item que se va a eliminar
-  const [deletionError, setDeletionError] = useState(false); // Flag para manejar el error
-  const [deletionSuccess, setDeletionSuccess] = useState(false); // Flag para manejar éxito
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [deletionError, setDeletionError] = useState(false);
+  const [deletionSuccess, setDeletionSuccess] = useState(false);
   const navigate = useNavigate();
 
-  // Obtener los detalles de la sucursal
   useEffect(() => {
     const fetchBranchData = async () => {
       try {
-        const response = await getBranchDetailsRequest(id); // Solo una solicitud
+        const response = await getBranchDetailsRequest(id);
         setBranch(response.data.branch);
       } catch (error) {
         console.error("Error al obtener los detalles de la sucursal:", error);
@@ -33,41 +32,36 @@ const ViewBranchPage = () => {
     fetchBranchData();
   }, [id]);
 
-  // Función para manejar la eliminación de una imagen
   const handleDeleteImage = (imageId) => {
     setItemToDelete({ type: 'image', id: imageId });
     setShowDeleteConfirmation(true);
   };
 
-  // Función para manejar la eliminación de un mensaje
   const handleDeleteText = (textId) => {
     setItemToDelete({ type: 'text', id: textId });
     setShowDeleteConfirmation(true);
   };
 
-  // Confirmar eliminación
   const handleConfirmDelete = async () => {
     try {
       if (itemToDelete.type === 'image') {
-        // Llamamos a la API para eliminar la imagen
         await deleteBranchImage(id, itemToDelete.id);
         setBranch({
           ...branch,
-          images: branch.images.filter((image) => image._id !== itemToDelete.id), // Eliminar la imagen del estado
+          images: branch.images.filter((image) => image._id !== itemToDelete.id),
         });
       } else if (itemToDelete.type === 'text') {
-        // Llamamos a la API para eliminar el texto
         await deleteBranchText(id, itemToDelete.id);
         setBranch({
           ...branch,
-          texts: branch.texts.filter((text) => text._id !== itemToDelete.id), // Eliminar el texto del estado
+          texts: branch.texts.filter((text) => text._id !== itemToDelete.id),
         });
       }
-      setShowDeleteConfirmation(false); // Cerramos la confirmación
-      setDeletionSuccess(true); // Establecer éxito
+      setShowDeleteConfirmation(false);
+      setDeletionSuccess(true);
     } catch (error) {
       console.error("Error al eliminar el item:", error);
-      setDeletionError(true); // Mostrar error
+      setDeletionError(true);
       setShowDeleteConfirmation(false);
     }
   };
@@ -84,17 +78,21 @@ const ViewBranchPage = () => {
     setDeletionSuccess(false);
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex justify-center items-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-6">
-      {/* Aquí va el contenido de la sucursal */}
       <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
         <h2 className="text-3xl font-semibold text-gray-800">{branch.nameBranch}</h2>
         <p className="text-lg text-gray-600 mt-2">{branch.address}</p>
         <p className="text-lg text-gray-600 mt-2">{branch.phone}</p>
 
-        {/* Botones de navegación */}
         <div className="mt-6 flex flex-wrap gap-4 justify-start">
           <button
             onClick={() => navigate(`/empleados/verEmpleados`)}
@@ -120,21 +118,23 @@ const ViewBranchPage = () => {
       {/* Imágenes de la sucursal */}
       {branch.images && branch.images.length > 0 && (
         <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
-          <h3 className="text-2xl font-semibold text-gray-800">Imágenes</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+          <h3 className="text-2xl font-semibold text-gray-800 mb-4">Imágenes</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {branch.images.map((image) => (
-              <div key={image._id} className="relative">
+              <div key={image._id} className="relative group">
                 <img 
-                  alt="Branch Image" 
-                  src={`${API}/${image.url}`}
-                  className="w-full h-auto rounded-md" />
-                
-                <button
-                  onClick={() => handleDeleteImage(image._id)}
-                  className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
-                >
-                  <FaTrashAlt />
-                </button>
+                  src={image.url} // URL directa de Cloudinary
+                  alt="Imagen de sucursal"
+                  className="w-full h-64 object-cover rounded-lg transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 rounded-lg">
+                  <button
+                    onClick={() => handleDeleteImage(image._id)}
+                    className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-red-600"
+                  >
+                    <FaTrashAlt className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -144,16 +144,19 @@ const ViewBranchPage = () => {
       {/* Mensajes de la sucursal */}
       {branch.texts && branch.texts.length > 0 && (
         <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
-          <h3 className="text-2xl font-semibold text-gray-800">Mensajes</h3>
-          <div className="mt-4">
+          <h3 className="text-2xl font-semibold text-gray-800 mb-4">Mensajes</h3>
+          <div className="space-y-4">
             {branch.texts.map((text) => (
-              <div key={text._id} className="flex justify-between items-center mb-4">
-                <p className="text-lg text-gray-600">{text.content}</p>
+              <div 
+                key={text._id} 
+                className="flex justify-between items-center p-4 bg-gray-50 rounded-lg group hover:bg-gray-100 transition-colors duration-200"
+              >
+                <p className="text-lg text-gray-700">{text.content}</p>
                 <button
                   onClick={() => handleDeleteText(text._id)}
-                  className="text-red-500 hover:text-red-700"
+                  className="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:text-red-700"
                 >
-                  <FaTrashAlt />
+                  <FaTrashAlt className="w-5 h-5" />
                 </button>
               </div>
             ))}
@@ -161,16 +164,15 @@ const ViewBranchPage = () => {
         </div>
       )}
 
-      {/* Componente de confirmación */}
+      {/* Mensajes de confirmación y estado */}
       {showDeleteConfirmation && (
         <QuestionMessage
-          message={`¿Estás seguro de que deseas eliminar este ${itemToDelete.type === 'image' ? 'imagen' : 'mensaje'}?`}
+          message={`¿Estás seguro de que deseas eliminar ${itemToDelete.type === 'image' ? 'esta imagen' : 'este mensaje'}?`}
           onConfirm={handleConfirmDelete}
           onCancel={handleCancelDelete}
         />
       )}
 
-      {/* Componente de éxito */}
       {deletionSuccess && (
         <AcceptMessage
           message={`${itemToDelete.type === 'image' ? 'Imagen' : 'Mensaje'} eliminado exitosamente.`}
@@ -178,10 +180,9 @@ const ViewBranchPage = () => {
         />
       )}
 
-      {/* Componente de error */}
       {deletionError && (
         <AcceptMessage
-          message="Hubo un error al eliminar el item. Inténtalo de nuevo más tarde."
+          message="Hubo un error al eliminar el item. Por favor, inténtalo de nuevo."
           onAccept={handleErrorAccept}
         />
       )}
